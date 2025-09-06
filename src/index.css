@@ -1,0 +1,98 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@font-face {
+    font-family: "Omnes";
+    src: url("/fonts/Omnes/omnes-regular.ttf");
+    font-weight: 400; /* Regular */
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Omnes";
+    src: url("/fonts/Omnes/Omnes-Hairline.otf");
+    font-weight: 100; /* Hairline */
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Omnes";
+    src: url("/fonts/Omnes/omnes_light.ttf");
+    font-weight: 300; /* Light */
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Omnes";
+    src: url("/fonts/Omnes/omnes-semibold.ttf");
+    font-weight: 600; /* Semibold */
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Omnes";
+    src: url("/fonts/Omnes/Omnes-Bold.otf");
+    font-weight: 700; /* Bold */
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Locator";
+    src: url("/fonts/Locator/LOCATODB.OTF");
+    font-weight: 700; /* Asume bold si no hay otros pesos */
+}
+
+@theme{
+    --color-bgClaro: #F2F2F2;
+    --color-bgOscuro1: #353b48;
+    --color-footer: #1b1f28;
+    --color-rojoLogo: #ed1a3b;
+    --color-verdeLogo: #0db14c;
+    --color-amarilloLogo: #fdb913;
+    --color-grisLogo: #58595b;
+    --color-navbarOscuro: #0D1B2A;
+}
+
+html {
+    font-family: "Omnes", sans-serif;
+}
+
+h1 {
+    font-family: "Locator", sans-serif;
+}
+
+/* Ocultar las partes de las horas */
+.rbc-time-gutter,
+.rbc-time-header-gutter,
+.rbc-timeslot-group {
+    display: none !important;
+}
+
+/* Ajustar la estructura del calendario */
+.rbc-time-content {
+    display: none !important;
+}
+
+/* Estirar mucho más el All Day */
+.rbc-allday-cell {
+    min-height: 425px; /* <-- Aquí se puede hacer mas grande el calendario */
+    height: 425px;
+    border: 1px solid #ddd;
+}
+
+/* Opcional: Ajustar el ancho del evento dentro del all-day */
+.rbc-event {
+    margin: 5px 0; /* Espaciado arriba y abajo */
+}
+
+@media (max-width: 768px) {
+    .rbc-allday-cell {
+      min-height: 370px;
+      height: 37opx;
+    }
+}
+
+button {
+    cursor: pointer;
+}
