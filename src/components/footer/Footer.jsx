@@ -1,5 +1,5 @@
-import { FaFacebook, FaInstagram, FaLinkedin } from "react-icons/fa";
-import { MdSupportAgent } from "react-icons/md"
+import { FaFacebook, FaInstagram, FaTiktok, FaYoutube } from "react-icons/fa";
+import { MdSupportAgent } from "react-icons/md";
 
 const Footer = () => {
   return (
@@ -13,16 +13,20 @@ const Footer = () => {
           <a href="/tickets/nuevo" className="mx-2 text-gray-600 transition-colors duration-300 dark:text-gray-300 hover:text-verdeLogo" aria-label="Soporte" >
             <MdSupportAgent className="text-lg" />
           </a>
-          <a href="https://facebook.com/bamxtepatitlan" target="_blank" rel="noreferrer" className="mx-2 text-gray-600 transition-colors duration-300 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400" aria-label="Facebook" >
+          <a href="https://www.facebook.com/p/Banco-de-Alimentos-de-Zamora-AC-100068378567561/" target="_blank" rel="noreferrer" className="mx-2 text-gray-600 transition-colors duration-300 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400" aria-label="Facebook" >
             <FaFacebook />
           </a>
 
-          <a href="https://instagram.com/bamxtepatitlan" target="_blank" rel="noreferrer" className="mx-2 text-gray-600 transition-colors duration-300 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400" aria-label="Instagram" >
+          <a href="https://instagram.com/bazac_" target="_blank" rel="noreferrer" className="mx-2 text-gray-600 transition-colors duration-300 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400" aria-label="Instagram" >
             <FaInstagram />
           </a>
 
-          <a href="https://linkedin.com/company/bamxtepatitlan" target="_blank" rel="noreferrer" className="mx-2 text-gray-600 transition-colors duration-300 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400" aria-label="Linkedin" >
-            <FaLinkedin />
+          <a href="https://www.youtube.com/@BancodeAlimentosdeZamora/videos" target="_blank" rel="noreferrer" className="mx-2 text-gray-600 transition-colors duration-300 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400" aria-label="Linkedin" >
+            <FaYoutube />
+          </a>
+
+          <a href="https://www.tiktok.com/@bancodealimentosdzamora" target="_blank" rel="noreferrer" className="mx-2 text-gray-600 transition-colors duration-300 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400" aria-label="Linkedin" >
+            <FaTiktok />
           </a>
         </div>
       </div>
