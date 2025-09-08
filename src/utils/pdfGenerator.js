@@ -15,7 +15,7 @@ const fonts = {
 };
 
 // Función principal para generar el PDF
-export const generateCobranzaPDF = (pedido, datosAdicionales) => {
+export const generateCobranzaPDF = (pedido, datosAdicionales, datosEfectivo) => {
   const fechaContabilidad = new Date().toLocaleDateString("es-MX");
   
   const content = [
@@ -34,7 +34,12 @@ export const generateCobranzaPDF = (pedido, datosAdicionales) => {
     { canvas: [{ type: "line", x1: 0, y1: 0, x2: 515, y2: 0, dash: { length: 5 } }], margin: [0, 0, 0, 2] },
     
     // Resumen
-    ...buildSummarySection(pedido, fechaContabilidad)
+    ...buildSummarySection(pedido, fechaContabilidad),
+    
+    // NUEVA PÁGINA PARA EFECTIVO Y DEPÓSITO
+    { text: "", pageBreak: "before" },
+    buildEfectivoSection(datosEfectivo),
+    buildDepositoSection()
   ];
 
   const docDefinition = {
@@ -45,7 +50,12 @@ export const generateCobranzaPDF = (pedido, datosAdicionales) => {
       title: { fontSize: 10, bold: true, alignment: "center", margin: [0, 0, 0, 10] },
       tableHeader: { bold: true, fontSize: 7, alignment: "center" },
       cellCenter: { alignment: "center", fontSize: 7 },
-      total: { fontSize: 9, bold: true, margin: [0, 10, 0, 10] }
+      total: { fontSize: 9, bold: true, margin: [0, 10, 0, 10] },
+      depositInfo: { fontSize: 8, bold: true, alignment: "center", margin: [0, 10, 0, 5] },
+      efectivoTitle: { fontSize: 10, bold: true, alignment: "center", margin: [0, 0, 0, 20] },
+      denominationHeader: { fontSize: 8, bold: true, alignment: "center" },
+      denominationCell: { fontSize: 7, alignment: "center" },
+      totalRow: { fontSize: 10, bold: true, alignment: "center" }
     },
     defaultStyle: { font: "Roboto" }
   };
@@ -140,7 +150,7 @@ function buildCommunityTable(pedido) {
   };
 }
 
-// TABLA EXTRAS (Arpillas + Excedentes)
+// TABLA EXTRAS
 function buildExtrasSection(datosAdicionales) {
   const totalArpillas = datosAdicionales.arpillasImporte;
   const totalExcedentes = datosAdicionales.excedentesImporte;
@@ -162,6 +172,163 @@ function buildExtrasSection(datosAdicionales) {
       paddingBottom: () => 2
     },
     margin: [0, 10, 0, 0]
+  };
+}
+
+// SECCIÓN DE EFECTIVO RECAUDADO
+function buildEfectivoSection(datosEfectivo) {
+  if (!datosEfectivo || datosEfectivo.totalEfectivo === "0.00") {
+    return { 
+      text: "NO SE REGISTRÓ EFECTIVO PARA ESTA RUTA", 
+      style: "denominationHeader",
+      alignment: "center",
+      margin: [0, 50, 0, 0]
+    };
+  }
+
+  const denominations = [
+    { label: "$1,000", value: datosEfectivo.billetes1000 || 0, amount: 1000, type: "Billetes" },
+    { label: "$500", value: datosEfectivo.billetes500 || 0, amount: 500, type: "Billetes" },
+    { label: "$200", value: datosEfectivo.billetes200 || 0, amount: 200, type: "Billetes" },
+    { label: "$100", value: datosEfectivo.billetes100 || 0, amount: 100, type: "Billetes" },
+    { label: "$50", value: datosEfectivo.billetes50 || 0, amount: 50, type: "Billetes" },
+    { label: "$20", value: datosEfectivo.billetes20 || 0, amount: 20, type: "Billetes" },
+    { label: "$20", value: datosEfectivo.monedas20 || 0, amount: 20, type: "Monedas" },
+    { label: "$10", value: datosEfectivo.monedas10 || 0, amount: 10, type: "Monedas" },
+    { label: "$5", value: datosEfectivo.monedas5 || 0, amount: 5, type: "Monedas" },
+    { label: "$2", value: datosEfectivo.monedas2 || 0, amount: 2, type: "Monedas" },
+    { label: "$1", value: datosEfectivo.monedas1 || 0, amount: 1, type: "Monedas" },
+    { label: "$0.50", value: datosEfectivo.monedas50C || 0, amount: 0.5, type: "Monedas" }
+  ];
+
+  // Separar billetes y monedas
+  const billetes = denominations.filter(item => item.type === "Billetes" && item.value > 0);
+  const monedas = denominations.filter(item => item.type === "Monedas" && item.value > 0);
+
+  const content = [];
+
+  // Sección de billetes
+  if (billetes.length > 0) {
+    const billetesRows = billetes.map(item => [
+      { text: item.label, style: "denominationCell" },
+      { text: item.value.toString(), style: "denominationCell" },
+      { text: `$${(item.value * item.amount).toLocaleString("es-Mx", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, style: "denominationCell" }
+    ]);
+
+    const totalBilletes = billetes.reduce((sum, item) => sum + (item.value * item.amount), 0);
+
+    content.push({
+      table: {
+        widths: [120, 80, 100],
+        body: [
+          [{ text: "BILLETES", colSpan: 3, style: "denominationHeader" }, {}, {}],
+          [
+            { text: "DENOMINACIÓN", style: "denominationHeader" }, 
+            { text: "CANTIDAD", style: "denominationHeader" }, 
+            { text: "SUBTOTAL", style: "denominationHeader" }
+          ],
+          ...billetesRows,
+          [
+            { text: "SUBTOTAL BILLETES:", colSpan: 2, style: "totalRow" }, {},
+            { text: `$${totalBilletes.toLocaleString("es-Mx", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, style: "totalRow" }
+          ]
+        ]
+      },
+      alignment: "center",
+      margin: [0, 0, 0, 5]
+    });
+  }
+
+  // Sección de monedas
+  if (monedas.length > 0) {
+    const monedasRows = monedas.map(item => [
+      { text: item.label, style: "denominationCell" },
+      { text: item.value.toString(), style: "denominationCell" },
+      { text: `$${(item.value * item.amount).toLocaleString("es-Mx", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, style: "denominationCell" }
+    ]);
+
+    const totalMonedas = monedas.reduce((sum, item) => sum + (item.value * item.amount), 0);
+
+    content.push({
+      table: {
+        widths: [120, 80, 100],
+        body: [
+          [{ text: "MONEDAS", colSpan: 3, style: "denominationHeader" }, {}, {}],
+          [
+            { text: "DENOMINACIÓN", style: "denominationHeader" }, 
+            { text: "CANTIDAD", style: "denominationHeader" }, 
+            { text: "SUBTOTAL", style: "denominationHeader" }
+          ],
+          ...monedasRows,
+          [
+            { text: "SUBTOTAL MONEDAS:", colSpan: 2, style: "totalRow" }, {},
+            { text: `$${totalMonedas.toLocaleString("es-Mx", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, style: "totalRow" }
+          ]
+        ]
+      },
+      alignment: "center",
+      margin: [0, 0, 0, 5]
+    });
+  }
+
+  // Total general
+  content.push({
+    table: {
+      widths: [200, 100],
+      body: [
+        [
+          { text: "TOTAL EFECTIVO RECAUDADO:", style: "totalRow", fontSize: 10 },
+          { text: `$${parseFloat(datosEfectivo.totalEfectivo).toLocaleString("es-Mx", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, style: "totalRow", fontSize: 10 }
+        ]
+      ]
+    },
+    layout: {
+      paddingTop: () => 4,
+      paddingBottom: () => 4,
+      paddingLeft: () => 8,
+      paddingRight: () => 8
+    },
+    alignment: "center",
+    margin: [0, 0, 0, 5]
+  });
+
+  // Observaciones si existen
+  if (datosEfectivo.observaciones) {
+    content.push({
+      table: {
+        widths: ["*"],
+        body: [
+          [{ text: "OBSERVACIONES", style: "denominationHeader" }],
+          [{ text: datosEfectivo.observaciones, style: "denominationCell", margin: [10, 5, 10, 5] }]
+        ]
+      },
+      layout: {
+        paddingTop: () => 4,
+        paddingBottom: () => 4
+      },
+      margin: [0, 0, 0, 5]
+    });
+  }
+
+  return content;
+}
+
+// INFORMACIÓN DE DEPÓSITO BANCARIO
+function buildDepositoSection() {
+  const cuentaDeposito = import.meta.env.VITE_CUENTA_DEPOSITO || "CUENTA NO CONFIGURADA";
+  
+  return {
+    table: {
+      widths: ["*"],
+      body: [
+        [{ text: "INFORMACIÓN DE DEPÓSITO BANCARIO", style: "denominationHeader", fontSize: 10 }],
+        [{ text: `Número de Cuenta: ${cuentaDeposito}`, style: "denominationCell", fontSize: 10, margin: [15, 5, 15, 5] }],
+        [{ text: "INSTRUCCIONES:", style: "denominationHeader", fontSize: 9 }],
+        [{ text: "• Depositar el efectivo recaudado en la cuenta bancaria indicada", style: "denominationCell", fontSize: 8, }],
+        [{ text: "• Conservar el comprobante de depósito como respaldo", style: "denominationCell", fontSize: 8, }],
+        [{ text: "• Entregar copia del comprobante junto con este reporte", style: "denominationCell", fontSize: 8,  }]
+      ]
+    }
   };
 }
 
