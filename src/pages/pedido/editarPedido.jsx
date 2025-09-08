@@ -1,20 +1,22 @@
-import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useAuth } from "context/AuthContext";
-import toast from "react-hot-toast";
 import api from "lib/axios";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { useNavigate, useParams } from "react-router";
 import { hasPermission, RESOURCES } from "utils/permisos";
 
-import Navbar from "components/navbar/Navbar";
-import Footer from "components/footer/Footer";
-import TableOrder from "components/tables/orders/TableOrder";
 import GroupButtons from "components/buttons/ButtonsForOrderEdit";
+import Footer from "components/footer/Footer";
+import EfectivoModal from "components/modals/EfectivoModal";
+import Navbar from "components/navbar/Navbar";
+import TableOrder from "components/tables/orders/TableOrder";
 
 const EditOrder = ( ) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const [showEfectivoModal, setShowEfectivoModal] = useState(false);
 
   //Fetch para obtener los datos del pedido
   const { data: pedido, isLoading: isLoadingPedido, isError: isErrorPedido, error: errorPedido } = useQuery({
@@ -77,7 +79,8 @@ const EditOrder = ( ) => {
       pedidoComunidad: data.pedidoComunidad,
       devoluciones: data.devoluciones,
       horaLlegada: data.horaLlegada,
-      estado: "finalizado"
+      estado: "finalizado",
+      efectivo: data.efectivo
     }),
     onSuccess: () => {
       toast.success("Pedido finalizado");
@@ -137,13 +140,23 @@ const EditOrder = ( ) => {
     ), 0);
 
     const totalEntregado = totalActual + editableData.devoluciones;
-
+    
+    // Validación de totales...
     if (totalEntregado !== totalOriginal) {
       toast.error(`Las despensas no coinciden. Original: ${totalOriginal}, Entregadas: ${totalActual}, Devueltas: ${editableData.devoluciones}`);
       return;
     }
 
-    finalizeMutation.mutate(editableData);
+    setShowEfectivoModal(true);
+  };
+
+  // Nuevo handler para finalizar CON efectivo
+  const handleFinalizeWithEfectivo = (efectivoData) => {
+    finalizeMutation.mutate({
+      ...editableData,
+      efectivo: efectivoData
+    });
+    setShowEfectivoModal(false);
   };
 
   const handleDelete = () => {
@@ -248,6 +261,13 @@ const EditOrder = ( ) => {
                 />
             </div>
           }
+          <EfectivoModal
+            show={showEfectivoModal}
+            onClose={() => setShowEfectivoModal(false)}
+            onConfirm={handleFinalizeWithEfectivo}
+            isLoading={finalizeMutation.isPending}
+            expectedTotal={pedido?.total || 0} // ← Pasar el total calculado
+          />
         </div>
       </main>
       <Footer />
