@@ -1,8 +1,8 @@
-import React, { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router";
-import { useAuth } from "context/AuthContext";
 import DarkModeToggle from "components/buttons/DarkModeToggle";
+import { useAuth } from "context/AuthContext";
 import { useTheme } from "context/ThemeContext";
+import { useRef, useState } from "react";
+import { useNavigate } from "react-router";
 
 import { HiOutlineMenuAlt4 } from "react-icons/hi";
 import { IoMdClose } from "react-icons/io";
@@ -44,7 +44,7 @@ const Navbar = () => {
                 className="w-auto h-7" 
                 src={isDark 
                   ? "https://bamxtepatitlan.org/assets/logoModoOscuro-BZP1mUxE.png" 
-                  : "https://bamxtepatitlan.org/assets/logo-B5cTjWox.png"
+                  : "https://bamxzamora.org/assets/images/logo.png"
                 } 
                 alt="BAMX Tepatitlán Logo" 
               />
