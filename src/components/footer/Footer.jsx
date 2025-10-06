@@ -6,7 +6,7 @@ const Footer = () => {
     <footer className="bg-white dark:bg-gray-900">
       <div className="container flex flex-col items-center justify-between p-6 mx-auto space-y-4 sm:space-y-0 sm:flex-row">
         <p className="text-sm text-gray-600 dark:text-gray-300">
-          © {new Date().getFullYear()} Banco Diocesano de Alimentos de los Altos
+          © {new Date().getFullYear()} Banco de Alimentos de Zamora A.C.
         </p>
 
         <div className="flex items-center -mx-2">

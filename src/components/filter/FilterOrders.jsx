@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import FilterDropdown from "components/filter/components/FilterDropdown";
 import DateFilter from "components/filter/components/DateFilter";
+import FilterDropdown from "components/filter/components/FilterDropdown";
 import api from "lib/axios";
 
 const FilterWrapper = ({
@@ -36,7 +36,6 @@ const FilterWrapper = ({
     queryKey: ["allWorkersWithOrders"],
     queryFn: async () => {
       const { data } = await api.get("/usuarios/todos/conPedidos");
-      console.log("Datos de trabajadores:", data);
       return data;
     },
   });

@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import toast from "react-hot-toast";
 import api from "lib/axios";
+import toast from "react-hot-toast";
 
-import Navbar from "components/navbar/Navbar";
-import Footer from "components/footer/Footer";
 import CalendarComponent from "components/calendar/Calendar";
+import Footer from "components/footer/Footer";
+import Navbar from "components/navbar/Navbar";
 
 const Calendario = () => {
   const { data: calendarioData, isLoading, error } = useQuery({
@@ -21,7 +21,7 @@ const Calendario = () => {
   return (
      <div className="min-h-screen flex flex-col">
       <Navbar />
-      <main className="flex-1 p-6 bg-gray-50 flex justify-center">
+      <main className="flex-1 p-6 bg-gray-50 dark:bg-gray-800 flex justify-center">
         <div className="w-full max-w-7xl px-4">
           <CalendarComponent eventos={calendarioData} />
         </div>

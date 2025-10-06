@@ -1,4 +1,4 @@
-import { HiEye, HiRefresh, HiDocumentAdd } from 'react-icons/hi';
+import { HiDocumentAdd, HiEye, HiRefresh } from "react-icons/hi";
 
 const BotonCobranza = ({ generada, url, onGenerar }) => (
   <div className="flex justify-center mt-6">

@@ -1,9 +1,9 @@
-# 🍎 Plataforma de Gestión de Pedidos - BAMX Tepatitlán
+# 🍎 Plataforma de Gestión de Pedidos - BAMX Zamora
 
-Sistema para administrar pedidos de despensas, optimizando la logística del Banco de Alimentos de México (BAMX) en Tepatitlán.
+Sistema para administrar pedidos de despensas, optimizando la logística del Banco de Alimentos de México (BAMX) en Zamora.
 
 ## 📌 Tabla de Contenidos
-- [🍎 Plataforma de Gestión de Pedidos - BAMX Tepatitlán](#-plataforma-de-gestión-de-pedidos---bamx-tepatitlán)
+- [🍎 Plataforma de Gestión de Pedidos - BAMX Zamora](#-plataforma-de-gestión-de-pedidos---bamx-zamora)
   - [📌 Tabla de Contenidos](#-tabla-de-contenidos)
   - [🌟 Funcionalidades Clave](#-funcionalidades-clave)
     - [✅ Gestión de Pedidos](#-gestión-de-pedidos)

@@ -1,9 +1,8 @@
-import React from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
-import api from "lib/axios";
 import ActionButtons from "components/buttons/ActionButtons";
+import api from "lib/axios";
 import { RESOURCES } from "utils/permisos";
 
 const TableComponent = ({ currentPage, pageSize, filters, setTotalOrders }) => {
@@ -18,13 +17,13 @@ const TableComponent = ({ currentPage, pageSize, filters, setTotalOrders }) => {
       
         // Agregar filtros
         if (filters.usuarios && filters.usuarios.length > 0) {
-          params.trabajadores = filters.usuarios.join(',');
+          params.trabajadores = filters.usuarios.join(",");
         }
         if (filters.rutas && filters.rutas.length > 0) {
-          params.rutas = filters.rutas.join(',');
+          params.rutas = filters.rutas.join(",");
         }
         if (filters.estatusPedido && filters.estatusPedido.length > 0) {
-          params.estatus = filters.estatusPedido.join(',');
+          params.estatus = filters.estatusPedido.join(",");
         }
         if (filters.rangoFechas) {
           params.fechaInicio = filters.rangoFechas.startDate;
@@ -114,7 +113,7 @@ const TableComponent = ({ currentPage, pageSize, filters, setTotalOrders }) => {
                   <td 
                     data-th="Ruta"
                     className="block lg:table-cell px-4 py-4 text-sm text-center">
-                    {item.ruta.nombre}
+                    {item.ruta?.nombre ?? "N/A"}
                   </td>
 
                   {/* Fecha */}

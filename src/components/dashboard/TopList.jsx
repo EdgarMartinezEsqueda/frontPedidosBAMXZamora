@@ -11,7 +11,7 @@ const TopList = ({
   };
   
   return (
-    <div className="bg-white p-4 rounded-lg shadow-md">
+    <div className="bg-white p-4 rounded-lg shadow-md dark:bg-gray-800">
       <h3 className="text-lg font-semibold mb-3">{title}</h3>
       <ul className="space-y-2">
         {items.map((item, index) => {
@@ -24,14 +24,14 @@ const TopList = ({
             : valueKey ? getNestedValue(item, valueKey) : null;
 
           return (
-            <li key={index} className="flex justify-between items-center p-2 hover:bg-gray-50 rounded">
-              <span className="text-gray-700 truncate">{name}</span>
+            <li key={index} className="flex justify-between items-center p-2 hover:bg-gray-50/5 rounded">
+              <span className="text-gray-700 dark:text-gray-200 truncate">{name}</span>
               <div className="flex items-center gap-2">
                 <span className="font-medium text-blue-600">
                   {value}
                 </span>
                 {valueLabel && (
-                  <span className="text-sm text-gray-500">{valueLabel}</span>
+                  <span className="text-sm text-gray-500 dark:text-gray-200">{valueLabel}</span>
                 )}
               </div>
             </li>

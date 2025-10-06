@@ -1,16 +1,14 @@
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import toast from "react-hot-toast";
-
-import api from "lib/axios";
-
-import Navbar from "components/navbar/Navbar";
-import Footer from "components/footer/Footer";
-import Sidebar from "components/sidebar/Sidebar";
+import CalendarComponent from "components/calendar/Calendar";
 import ChartComponent from "components/charts/Chart";
 import TopList from "components/dashboard/TopList";
-import CalendarComponent from "components/calendar/Calendar";
 import ReportFilter from "components/filter/FilterReport";
+import Footer from "components/footer/Footer";
+import Navbar from "components/navbar/Navbar";
+import Sidebar from "components/sidebar/Sidebar";
+import api from "lib/axios";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
 const Report = () => {
   const [filter, setFilter] = useState({
@@ -52,7 +50,7 @@ const Report = () => {
       <Navbar />
       <div className="flex flex-1">
         <Sidebar />
-        <main className="flex-1 p-6 bg-gray-50">
+        <main className="flex-1 p-6 bg-gray-50 dark:bg-gray-700 space-y-6">
           <div className="mb-4">
             <ReportFilter
               currentFilter={filter}
@@ -111,7 +109,7 @@ const Report = () => {
 const transformarDatosBar = (data) => {
   if(!data) return [];
   return data?.map(item => ({
-    mes: item.mes.split('-')[1], // Extraer solo el mes
+    mes: item.mes.split("-")[1], // Extraer solo el mes
     Total: item.costo + item.medioCosto + item.sinCosto + item.apadrinadas,
     ...item
   }));

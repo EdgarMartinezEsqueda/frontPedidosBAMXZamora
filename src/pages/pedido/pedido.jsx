@@ -18,18 +18,18 @@ import { generateCobranzaPDF } from "utils/pdfGenerator";
 
 // Configuración para billetes y monedas
 const DENOMINATIONS_CONFIG = [
-  { key: "billetes1000", value: 1000, label: "Billetes $1,000", bgColor: "bg-purple-50" },
-  { key: "billetes500", value: 500, label: "Billetes $500", bgColor: "bg-blue-50" },
-  { key: "billetes200", value: 200, label: "Billetes $200", bgColor: "bg-green-50" },
-  { key: "billetes100", value: 100, label: "Billetes $100", bgColor: "bg-red-50" },
-  { key: "billetes50", value: 50, label: "Billetes $50", bgColor: "bg-pink-50" },
-  { key: "billetes20", value: 20, label: "Billetes $20", bgColor: "bg-yellow-50" },
-  { key: "monedas20", value: 20, label: "Monedas $20", bgColor: "bg-gray-50" },
-  { key: "monedas10", value: 10, label: "Monedas $10", bgColor: "bg-yellow-100" },
-  { key: "monedas5", value: 5, label: "Monedas $5", bgColor: "bg-orange-50" },
-  { key: "monedas2", value: 2, label: "Monedas $2", bgColor: "bg-gray-100" },
-  { key: "monedas1", value: 1, label: "Monedas $1", bgColor: "bg-yellow-200" },
-  { key: "monedas50C", value: 0.5, label: "Monedas $0.50", bgColor: "bg-gray-100" },
+  { key: "billetes1000", value: 1000, label: "Billetes $1,000", bgColor: "bg-purple-50 dark:bg-purple-900/30" },
+  { key: "billetes500", value: 500, label: "Billetes $500", bgColor: "bg-blue-50 dark:bg-blue-900/30" },
+  { key: "billetes200", value: 200, label: "Billetes $200", bgColor: "bg-green-50 dark:bg-green-900/30" },
+  { key: "billetes100", value: 100, label: "Billetes $100", bgColor: "bg-red-50 dark:bg-red-900/30" },
+  { key: "billetes50", value: 50, label: "Billetes $50", bgColor: "bg-pink-50 dark:bg-pink-900/30" },
+  { key: "billetes20", value: 20, label: "Billetes $20", bgColor: "bg-yellow-50 dark:bg-yellow-900/30" },
+  { key: "monedas20", value: 20, label: "Monedas $20", bgColor: "bg-gray-50 dark:bg-gray-700/50" },
+  { key: "monedas10", value: 10, label: "Monedas $10", bgColor: "bg-yellow-100 dark:bg-yellow-900/40" },
+  { key: "monedas5", value: 5, label: "Monedas $5", bgColor: "bg-orange-50 dark:bg-orange-900/30" },
+  { key: "monedas2", value: 2, label: "Monedas $2", bgColor: "bg-gray-100 dark:bg-gray-700/60" },
+  { key: "monedas1", value: 1, label: "Monedas $1", bgColor: "bg-yellow-200 dark:bg-yellow-900/50" },
+  { key: "monedas50C", value: 0.5, label: "Monedas $0.50", bgColor: "bg-gray-100 dark:bg-gray-700/60" },
 ];
 
 const OrderPage = () => {
@@ -156,7 +156,7 @@ const OrderPage = () => {
     if (cantidad <= 0) return null;
     
     return (
-      <div className={`flex justify-between p-2 ${denomination.bgColor} rounded`}>
+      <div className={`flex justify-between p-2 ${denomination.bgColor} rounded text-gray-800 dark:text-gray-200`}>
         <span>{denomination.label}:</span>
         <span className="font-medium">
           {cantidad} × ${denomination.value.toLocaleString()}
@@ -174,41 +174,41 @@ const OrderPage = () => {
     const usuarioEfectivo =  efectivo.usuario.username;
 
     return (
-      <div className="max-w-2xl mx-auto p-4 bg-gray-50 rounded-lg shadow-sm mt-4">
-        <h3 className="text-center text-xl font-bold text-verdeLogo mb-4">
+      <div className="max-w-2xl mx-auto p-4 bg-gray-50 dark:bg-gray-800 rounded-lg shadow-sm mt-4">
+        <h3 className="text-center text-xl font-bold text-verdeLogo dark:text-green-400 mb-4">
           Detalles finales
         </h3>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700 dark:text-gray-300">
           <div className="flex items-center gap-2 justify-center">
-            <span className="font-semibold text-gray-600">Despensas retornadas:</span>
-            <span className="text-rojoLogo font-bold text-lg">
+            <span className="font-semibold text-gray-600 dark:text-gray-400">Despensas retornadas:</span>
+            <span className="text-rojoLogo dark:text-red-400 font-bold text-lg">
               {pedidoData.devoluciones ?? 0}
             </span>
           </div>
           
           <div className="flex items-center gap-2 justify-center">
-            <span className="font-semibold text-gray-600">Hora de llegada:</span>
-            <span className="text-amarilloLogo font-bold text-lg">
+            <span className="font-semibold text-gray-600 dark:text-gray-400">Hora de llegada:</span>
+            <span className="text-amarilloLogo dark:text-yellow-400 font-bold text-lg">
               {formatearHora(pedidoData.horaLlegada) || 
-                <span className="text-gray-400">N/A</span>}
+                <span className="text-gray-400 dark:text-gray-500">N/A</span>}
             </span>
           </div>
 
           {hasPermission(user.data, RESOURCES.COBRANZAS, "read", pedidoData.idTs) && (
             <>
               <div className="flex items-center gap-2 justify-center">
-                <span className="font-semibold text-gray-600">Efectivo recaudado:</span>
-                <span className="text-green-600 font-bold text-lg">
+                <span className="font-semibold text-gray-600 dark:text-gray-400">Efectivo recaudado:</span>
+                <span className="text-green-600 dark:text-green-400 font-bold text-lg">
                   {efectivo 
                     ? `$${totalEfectivo.toLocaleString()}`
-                    : <span className="text-gray-400">Sin registro</span>}
+                    : <span className="text-gray-400 dark:text-gray-500">Sin registro</span>}
                 </span>
               </div>
 
               <div className="flex items-center gap-2 justify-center">
-                <span className="font-semibold text-gray-600">Total esperado:</span>
-                <span className="text-blue-600 font-bold text-lg">
+                <span className="font-semibold text-gray-600 dark:text-gray-400">Total esperado:</span>
+                <span className="text-blue-600 dark:text-blue-400 font-bold text-lg">
                   ${pedidoData.total?.toLocaleString()}
                 </span>
               </div>
@@ -218,11 +218,15 @@ const OrderPage = () => {
 
         {/* Diferencia */}
         {hasPermission(user.data, RESOURCES.COBRANZAS, "read", pedidoData.idTs) && 
-         efectivo && tieneDiferencia && (
-          <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+        efectivo && tieneDiferencia && (
+          <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
             <div className="flex items-center justify-center gap-2">
-              <span className="font-semibold text-yellow-800">Diferencia:</span>
-              <span className={`font-bold ${diferencia > 0 ? "text-orange-600" : "text-red-600"}`}>
+              <span className="font-semibold text-yellow-800 dark:text-yellow-300">Diferencia:</span>
+              <span className={`font-bold ${
+                diferencia > 0 
+                  ? "text-orange-600 dark:text-orange-400" 
+                  : "text-red-600 dark:text-red-400"
+              }`}>
                 {diferencia > 0 ? "+" : ""}${diferencia.toLocaleString()}
               </span>
             </div>
@@ -234,7 +238,7 @@ const OrderPage = () => {
           <div className="mt-4 text-center">
             <button
               onClick={() => setMostrarDetalleEfectivo(!mostrarDetalleEfectivo)}
-              className="text-sm text-blue-600 hover:text-blue-800 underline transition-colors"
+              className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline transition-colors"
             >
               {mostrarDetalleEfectivo ? "Ocultar" : "Ver"} desglose de efectivo
             </button>
@@ -243,9 +247,12 @@ const OrderPage = () => {
 
         {/* Desglose detallado */}
         {hasPermission(user.data, RESOURCES.COBRANZAS, "read", pedidoData.idTs) && 
-         mostrarDetalleEfectivo && efectivo && (
-          <div className="mt-4 p-4 bg-white border border-gray-200 rounded-lg">
-            <h4 className="font-semibold text-gray-800 mb-3">Desglose del efectivo, reportado por el usuario <strong className="text-cyan-950">{usuarioEfectivo}</strong></h4>
+        mostrarDetalleEfectivo && efectivo && (
+          <div className="mt-4 p-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg">
+            <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-3">
+              Desglose del efectivo, reportado por el usuario{" "}
+              <strong className="text-cyan-950 dark:text-cyan-400">{usuarioEfectivo}</strong>
+            </h4>
             
             <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm">
               {DENOMINATIONS_CONFIG.map(denomination => (
@@ -258,9 +265,9 @@ const OrderPage = () => {
             </div>
 
             {efectivo.observaciones && (
-              <div className="mt-3 p-3 bg-gray-50 rounded-lg">
-                <span className="font-semibold text-gray-700">Observaciones:</span>
-                <p className="text-gray-600 mt-1">{efectivo.observaciones}</p>
+              <div className="mt-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                <span className="font-semibold text-gray-700 dark:text-gray-300">Observaciones:</span>
+                <p className="text-gray-600 dark:text-gray-400 mt-1">{efectivo.observaciones}</p>
               </div>
             )}
           </div>
@@ -284,7 +291,7 @@ const OrderPage = () => {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
             <div className="text-center md:text-left">
               <h2 className="font-bold text-2xl text-verdeLogo">Pedido #{id}</h2>
-              <h2 className="text-md text-rojoLogo">{pedidoData.ruta.nombre}</h2>
+              <h2 className="text-md text-rojoLogo">{pedidoData.ruta?.nombre ?? "N/A"}</h2>
               <h3 className="text-sm">
                 Fecha de entrega estimada:{" "}
                 <strong className="text-amarilloLogo">

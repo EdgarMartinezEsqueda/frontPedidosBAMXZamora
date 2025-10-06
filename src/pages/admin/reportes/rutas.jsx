@@ -1,16 +1,16 @@
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import toast from "react-hot-toast";
 
 import api from "lib/axios";
 
-import Navbar from "components/navbar/Navbar";
-import Footer from "components/footer/Footer";
-import Sidebar from "components/sidebar/Sidebar";
 import ChartComponent from "components/charts/Chart";
 import TopList from "components/dashboard/TopList";
-import RouteMetricsTable from "components/tables/reports/Routes"; 
 import ReportFilter from "components/filter/FilterReport";
+import Footer from "components/footer/Footer";
+import Navbar from "components/navbar/Navbar";
+import Sidebar from "components/sidebar/Sidebar";
+import RouteMetricsTable from "components/tables/reports/Routes";
 
 const Report = () => {
   const [filter, setFilter] = useState({
@@ -42,7 +42,7 @@ const Report = () => {
       <Navbar />
       <div className="flex flex-1">
         <Sidebar />
-        <main className="flex-1 p-6 bg-gray-50">
+        <main className="flex-1 p-6 bg-gray-50 dark:bg-gray-700 space-y-6">
           <div className="mb-4">
             <ReportFilter
               currentFilter={filter}
@@ -58,8 +58,8 @@ const Report = () => {
                 data={transformarComparativaRutas(graficaComparativa)}
                 className="h-96"
                 bars={[
-                  { dataKey: 'despensas', name: 'Despensas', color: '#3B82F6' },
-                  { dataKey: 'devoluciones', name: 'Devoluciones', color: '#EF4444' }
+                  { dataKey: "despensas", name: "Despensas", color: "#3B82F6" },
+                  { dataKey: "devoluciones", name: "Devoluciones", color: "#EF4444" }
                 ]}
               />
             </div>

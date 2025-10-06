@@ -1,18 +1,18 @@
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import toast from "react-hot-toast";
 
 import api from "lib/axios";
 
-import Navbar from "components/navbar/Navbar";
-import Footer from "components/footer/Footer";
-import Sidebar from "components/sidebar/Sidebar";
+import KPICard from "components/cards/KPICard";
 import ChartComponent from "components/charts/Chart";
+import ReportFilter from "components/filter/FilterReport";
+import Footer from "components/footer/Footer";
+import Navbar from "components/navbar/Navbar";
 import Pagination from "components/pagination/Pagination";
 import SearchInput from "components/search/Search";
-import KPICard from "components/cards/KPICard";
+import Sidebar from "components/sidebar/Sidebar";
 import TableComponent from "components/tables/reports/Summary";
-import ReportFilter from "components/filter/FilterReport";
 
 const Report = () => {
   const [filter, setFilter] = useState({
@@ -27,7 +27,7 @@ const Report = () => {
   // Nuevos estados para tabla detallada
   const [currentDetailPage, setCurrentDetailPage] = useState(1);
   const [detailSearch, setDetailSearch] = useState("");
-  const [sortConfig, setSortConfig] = useState({ key: 'fecha', direction: 'desc' });
+  const [sortConfig, setSortConfig] = useState({ key: "fecha", direction: "desc" });
 
   const { data: reportesData, isLoading, error } = useQuery({
     queryKey: ["reportesDespensas", filter],
@@ -73,7 +73,7 @@ const Report = () => {
   const handleSort = (key) => {
     setSortConfig(prev => ({
       key,
-      direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc'
+      direction: prev.key === key && prev.direction === "asc" ? "desc" : "asc"
     }));
   };
 
@@ -85,10 +85,10 @@ const Report = () => {
   );
 
   const sortedDetails = [...filteredDetails].sort((a, b) => {
-    if (sortConfig.key === 'fecha') {
+    if (sortConfig.key === "fecha") {
       return new Date(a[sortConfig.key]) - new Date(b[sortConfig.key]);
     }
-    return sortConfig.direction === 'asc' 
+    return sortConfig.direction === "asc" 
       ? a[sortConfig.key] - b[sortConfig.key] 
       : b[sortConfig.key] - a[sortConfig.key];
   });
@@ -114,20 +114,20 @@ const Report = () => {
 
   // Columnas para tabla detallada
   const detailColumns = [
-    { key: 'fecha', title: 'Fecha' },
-    { key: 'ruta', title: 'Ruta' },
+    { key: "fecha", title: "Fecha" },
+    { key: "ruta", title: "Ruta" },
     { 
-      key: 'comunidades', 
-      title: 'Comunidades',
+      key: "comunidades", 
+      title: "Comunidades",
       render: (value) => (
         <span title={value}>
           {value.length > 30 ? `${value.substring(0, 30)}...` : value}
         </span>
       )
     },
-    { key: 'totalDespensas', title: 'Total' },
-    { key: 'devoluciones', title: 'Devoluciones' },
-    { key: 'estado', title: 'Estado' },
+    { key: "totalDespensas", title: "Total" },
+    { key: "devoluciones", title: "Devoluciones" },
+    { key: "estado", title: "Estado" },
   ];
 
   return (
@@ -135,7 +135,7 @@ const Report = () => {
       <Navbar />
       <div className="flex flex-1">
         <Sidebar />
-        <main className="flex-1 p-6 bg-gray-50 space-y-6">
+        <main className="flex-1 p-6 bg-gray-50 dark:bg-gray-700 space-y-6">
           <div className="mb-4">
             <ReportFilter
               currentFilter={filter}
@@ -190,7 +190,7 @@ const Report = () => {
                 color: "#EF4444" 
               }]}
             />
-              <div className="bg-white p-4 rounded-lg shadow-md">
+              <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="text-lg font-semibold">Por Ruta</h3>
                   <button

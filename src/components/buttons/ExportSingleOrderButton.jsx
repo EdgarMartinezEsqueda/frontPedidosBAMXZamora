@@ -1,7 +1,7 @@
 const ExportSingleOrderButton = ({ pedido }) => {
   const handleExport = () => {
     const csvContent = convertToCSV(pedido);
-    const bom = '\uFEFF'; // Byte Order Mark para Excel
+    const bom = "\uFEFF"; // Byte Order Mark para Excel
     const blob = new Blob([bom + csvContent], { 
       type: "text/csv;charset=utf-8"
     });
@@ -34,23 +34,23 @@ const ExportSingleOrderButton = ({ pedido }) => {
       { header: "Observaciones", accessor: "pedido.pedidoComunidad.observaciones" }
     ];
 
-    const headers = columns.map(c => `"${c.header}"`).join(',');
+    const headers = columns.map(c => `"${c.header}"`).join(",");
     const rows = [];
 
     // Crear una fila por cada comunidad en el pedido
     pedido.pedidoComunidad.forEach(pc => {
       const row = columns.map(col => {
-        const value = col.accessor.split('.').reduce((acc, key) => {
-          if (key === 'pedidoComunidad') return pc;
+        const value = col.accessor.split(".").reduce((acc, key) => {
+          if (key === "pedidoComunidad") return pc;
           return acc ? acc[key] : null;
         }, pedido);
         
-        return `"${String(value || '').replace(/"/g, '""')}"`;
+        return `"${String(value || "").replace(/"/g, '""')}"`;
       });
-      rows.push(row.join(','));
+      rows.push(row.join(","));
     });
 
-    return [headers, ...rows].join('\n');
+    return [headers, ...rows].join("\n");
   };
 
   return (

@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
 import AcceptButton from "components/buttons/Accept";
+import { useEffect, useState } from "react";
 
 const RouteForm = ({ onSubmit, isSubmitting, existingRoute }) => {
   const [nombreRuta, setNombreRuta] = useState(existingRoute?.nombre || "");
@@ -19,7 +19,7 @@ const RouteForm = ({ onSubmit, isSubmitting, existingRoute }) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
-        <label htmlFor="nombreRuta" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="nombreRuta" className="block text-sm font-medium text-gray-700 dark:text-gray-200">
           Nombre de la ruta
         </label>
         <input
