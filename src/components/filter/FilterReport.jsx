@@ -30,14 +30,16 @@ const ReportFilter = ({ currentFilter, onChange }) => {
   };
 
   return (
-    <div className="bg-white p-4 rounded-xl shadow flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+    <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow dark:shadow-gray-900/50 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
       <div className="flex flex-col md:flex-row md:items-end md:gap-4 w-full">
         <div className="flex flex-col w-full md:w-40">
-          <label className="text-xs font-medium text-gray-600 mb-1">Vista</label>
+          <label className="text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">
+            Vista
+          </label>
           <select
             value={view}
             onChange={handleViewChange}
-            className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-colors"
           >
             <option value="anual">Anual</option>
             <option value="mensual">Mensual</option>
@@ -46,11 +48,13 @@ const ReportFilter = ({ currentFilter, onChange }) => {
 
         {(view === "mensual" || view === "mes-anio") && (
           <div className="flex flex-col w-full md:w-40">
-            <label className="text-xs font-medium text-gray-600 mb-1">Mes</label>
+            <label className="text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">
+              Mes
+            </label>
             <select
               value={month}
               onChange={handleMonthChange}
-              className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-colors"
             >
               {Array.from({ length: 12 }, (_, i) => (
                 <option key={i + 1} value={i + 1}>
@@ -62,11 +66,13 @@ const ReportFilter = ({ currentFilter, onChange }) => {
         )}
 
         <div className="flex flex-col w-full md:w-40">
-          <label className="text-xs font-medium text-gray-600 mb-1">Año</label>
+          <label className="text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">
+            Año
+          </label>
           <select
             value={year}
             onChange={handleYearChange}
-            className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-colors"
           >
             {years.map((y) => (
               <option key={y} value={y}>{y}</option>

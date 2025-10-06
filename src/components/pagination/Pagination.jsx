@@ -30,7 +30,7 @@ const Pagination = ({
 
   // Manejar teclado para accesibilidad
   const handleKeyDown = (e, action) => {
-    if (e.key === 'Enter' || e.key === ' ') {
+    if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       action();
     }

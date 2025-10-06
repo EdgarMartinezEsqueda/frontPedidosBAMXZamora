@@ -41,12 +41,12 @@ const Navbar = () => {
           <div className="flex items-center justify-between">
             <a href="/">
               <img 
-                className="w-auto h-7" 
+                className="w-auto h-10" 
                 src={isDark 
-                  ? "https://bamxtepatitlan.org/assets/logoModoOscuro-BZP1mUxE.png" 
-                  : "https://bamxzamora.org/assets/images/logo.png"
+                  ? "https://bamxzamora.org/assets/images/logoOscuro.webp" 
+                  : "https://bamxzamora.org/assets/images/zamora.webp"
                 } 
-                alt="BAMX Tepatitlán Logo" 
+                alt="BAMX Zamora Logo" 
               />
             </a>
             {/* Mobile menu button */}

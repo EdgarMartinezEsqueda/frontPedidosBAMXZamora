@@ -1,9 +1,8 @@
-import React from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
-import api from "lib/axios";
 import ActionButtons from "components/buttons/ActionButtons";
+import api from "lib/axios";
 import { RESOURCES } from "utils/permisos";
 
 const TableComponent = () => {
@@ -58,7 +57,7 @@ const TableComponent = () => {
                 <tbody className="bg-white divide-y divide-gray-200 dark:divide-gray-700 dark:bg-gray-900 text-black dark:text-white">
                   {!data || data.length === 0 ? (
                     <tr>
-                      <td colSpan="3" className="px-4 py-4 text-sm text-center text-gray-500 dark:text-gray-400">
+                      <td colSpan="5" className="px-4 py-4 text-sm text-center text-gray-500 dark:text-gray-400">
                         No hay datos disponibles.
                       </td>
                     </tr>

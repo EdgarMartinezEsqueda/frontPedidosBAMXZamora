@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import AcceptButton from "components/buttons/Accept";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import toast from "react-hot-toast";
 import Select from "components/selects/Select";
 import api from "lib/axios";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 const CommunityForm = ({ onSubmit, isSubmitting, existingCommunity }) => {
   const [formData, setFormData] = useState({
@@ -68,21 +68,21 @@ const CommunityForm = ({ onSubmit, isSubmitting, existingCommunity }) => {
       <div className="space-y-4">
         {/* Campo Nombre */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
             Nombre de la comunidad
           </label>
           <input
             name="nombre"
             value={formData.nombre}
             onChange={handleChange}
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-verdeLogo focus:ring-verdeLogo"
+            className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 focus:border-verdeLogo focus:ring-verdeLogo focus:ring-2 focus:outline-none transition-colors placeholder:text-gray-400 dark:placeholder:text-gray-500"
             required
           />
         </div>
 
         {/* Selector de Municipio */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
             Municipio perteneciente
           </label>
           <Select
@@ -96,7 +96,7 @@ const CommunityForm = ({ onSubmit, isSubmitting, existingCommunity }) => {
 
         {/* Selector de Ruta */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
             Ruta asociada
           </label>
           <Select
@@ -110,11 +110,13 @@ const CommunityForm = ({ onSubmit, isSubmitting, existingCommunity }) => {
 
         {/* Costo de Paquete */}
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
             Costo de paquete alimentario
           </label>
           <div className="relative">
-            <span className="absolute left-3 top-2.5 text-gray-500 select-none">$</span>
+            <span className="absolute left-3 top-2.5 text-gray-500 dark:text-gray-400 select-none">
+              $
+            </span>
             <input
               type="number"
               min={0}
@@ -122,16 +124,15 @@ const CommunityForm = ({ onSubmit, isSubmitting, existingCommunity }) => {
               onChange={handleChange}
               value={formData.costoPaquete}
               required
-              className="pl-7 pr-3 py-2 w-full border border-gray-300 shadow-sm focus:border-verdeLogo focus:ring-2 focus:ring-verdeLogo focus:outline-none transition duration-150 ease-in-out rounded-md"
+              className="pl-7 pr-3 py-2 w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm focus:border-verdeLogo focus:ring-2 focus:ring-verdeLogo focus:outline-none transition-colors rounded-md"
             />
           </div>
         </div>
 
-
         {/* Campos restantes */}
         {["jefa", "contacto", "direccion", "notas"].map((field) => (
           <div key={field}>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
               {{
                 jefa: "Jefa de comunidad",
                 contacto: "Contacto de la jefa",
@@ -143,7 +144,7 @@ const CommunityForm = ({ onSubmit, isSubmitting, existingCommunity }) => {
               name={field}
               value={formData[field]}
               onChange={handleChange}
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-verdeLogo focus:ring-verdeLogo"
+              className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 focus:border-verdeLogo focus:ring-verdeLogo focus:ring-2 focus:outline-none transition-colors placeholder:text-gray-400 dark:placeholder:text-gray-500"
             />
           </div>
         ))}

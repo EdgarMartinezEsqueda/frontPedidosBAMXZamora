@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
 import AcceptButton from "components/buttons/Accept";
 import Select from "components/selects/Select";
 import { useAuth } from "context/AuthContext";
+import { useEffect, useState } from "react";
 import { hasPermission, RESOURCES } from "utils/permisos";
 
 const TicketForm = ({ onSubmit, isSubmitting, existingTicket }) => {
@@ -55,14 +55,14 @@ const TicketForm = ({ onSubmit, isSubmitting, existingTicket }) => {
       <div className="space-y-4">
         {/* Campo Descripción */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
             Descripción del problema
           </label>
           <textarea
             name="descripcion"
             value={formData.descripcion}
             onChange={handleChange}
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 h-32 focus:border-verdeLogo focus:ring-verdeLogo"
+            className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 h-32 focus:border-verdeLogo focus:ring-2 focus:ring-verdeLogo focus:outline-none transition-colors placeholder:text-gray-400 dark:placeholder:text-gray-500 disabled:bg-gray-100 dark:disabled:bg-gray-900 disabled:cursor-not-allowed"
             required
             disabled={!canEditStatus && !!existingTicket}
           />
@@ -70,7 +70,7 @@ const TicketForm = ({ onSubmit, isSubmitting, existingTicket }) => {
 
         {/* Selector de Prioridad */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
             Prioridad
           </label>
           <Select
@@ -89,32 +89,36 @@ const TicketForm = ({ onSubmit, isSubmitting, existingTicket }) => {
 
         {/* Selector de Estatus (solo para Dirección) */}
         {canEditStatus && (
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Estatus
-            </label>
-            <Select
-              name="estatus"
-              options={[
-                { id: "abierto", nombre: "Abierto" },
-                { id: "en_proceso", nombre: "En proceso" },
-                { id: "cerrado", nombre: "Cerrado" },
-                { id: "cancelado", nombre: "Cancelado" }
-              ]}
-              value={formData.estatus}
-              onChange={handleChange}
-              placeholder="Seleccione el estatus"
-            />
-            <label className="block text-sm font-medium text-gray-700">
-              Comentarios finales
-            </label>
-            <textarea
-              name="comentarios"
-              value={formData.comentarios ?? ""}
-              onChange={handleChange}
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 h-32 focus:border-verdeLogo focus:ring-verdeLogo"
-              disabled={!canEditStatus && !!existingTicket}
-            />
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
+                Estatus
+              </label>
+              <Select
+                name="estatus"
+                options={[
+                  { id: "abierto", nombre: "Abierto" },
+                  { id: "en_proceso", nombre: "En proceso" },
+                  { id: "cerrado", nombre: "Cerrado" },
+                  { id: "cancelado", nombre: "Cancelado" }
+                ]}
+                value={formData.estatus}
+                onChange={handleChange}
+                placeholder="Seleccione el estatus"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
+                Comentarios finales
+              </label>
+              <textarea
+                name="comentarios"
+                value={formData.comentarios ?? ""}
+                onChange={handleChange}
+                className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 h-32 focus:border-verdeLogo focus:ring-2 focus:ring-verdeLogo focus:outline-none transition-colors placeholder:text-gray-400 dark:placeholder:text-gray-500 disabled:bg-gray-100 dark:disabled:bg-gray-900 disabled:cursor-not-allowed"
+                disabled={!canEditStatus && !!existingTicket}
+              />
+            </div>
           </div>
         )}
       </div>

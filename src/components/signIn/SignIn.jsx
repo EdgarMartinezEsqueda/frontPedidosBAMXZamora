@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { Link, useNavigate } from "react-router";
-import toast from "react-hot-toast";
-import api from "lib/axios";
 import { useTheme } from "context/ThemeContext";
+import api from "lib/axios";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { Link, useNavigate } from "react-router";
 
 import image from "assets/signIn.webp";
 
@@ -73,8 +73,8 @@ const SignUp = () => {
             <img
               src={
                 isDark
-                  ? "https://bamxtepatitlan.org/assets/logoModoOscuro-BZP1mUxE.png"
-                  : "https://bamxtepatitlan.org/assets/logo-B5cTjWox.png"
+                  ? "https://bamxzamora.org/assets/images/logoOscuro.webp"
+                  : "https://bamxzamora.org/assets/images/zamora.webp"
               }
               alt="Logo del Banco de Alimentos"
               className="w-24 object-cover"
@@ -182,7 +182,7 @@ const SignUp = () => {
             </Link>
           </p>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-12">
-            &copy; {new Date().getFullYear()} Banco Diocesano de Alimentos de los Altos
+            &copy; {new Date().getFullYear()} Banco de Alimentos de Zamora A.C.
           </p>
         </div>
       </div>

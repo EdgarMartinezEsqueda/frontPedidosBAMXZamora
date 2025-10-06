@@ -1,18 +1,18 @@
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import toast from "react-hot-toast";
 
 import api from "lib/axios";
 
-import Navbar from "components/navbar/Navbar";
-import Footer from "components/footer/Footer";
-import Sidebar from "components/sidebar/Sidebar";
+import KPICard from "components/cards/KPICard";
 import ChartComponent from "components/charts/Chart";
+import ReportFilter from "components/filter/FilterReport";
+import Footer from "components/footer/Footer";
+import Navbar from "components/navbar/Navbar";
 import Pagination from "components/pagination/Pagination";
 import SearchInput from "components/search/Search";
-import KPICard from "components/cards/KPICard";
+import Sidebar from "components/sidebar/Sidebar";
 import TableComponent from "components/tables/reports/Summary";
-import ReportFilter from "components/filter/FilterReport";
 
 const Report = () => {
   const [filter, setFilter] = useState({
@@ -116,7 +116,7 @@ const Report = () => {
       <Navbar />
       <div className="flex flex-1">
         <Sidebar />
-        <main className="flex-1 p-6 bg-gray-50 space-y-6">
+        <main className="flex-1 p-6 bg-gray-50 dark:bg-gray-700 space-y-6">
           <div className="mb-4">
             <ReportFilter
               currentFilter={filter}
@@ -158,7 +158,7 @@ const Report = () => {
           </div>
 
           {/* Top comunidades por pedidos */}
-          <div className="bg-white p-4 rounded-lg shadow-md">
+          <div className="bg-white dark:bg-gray-700 p-4 rounded-lg shadow-md">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold">Top Comunidades por Pedidos</h3>
               <button

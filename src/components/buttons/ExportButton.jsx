@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from "react";
 import api from "lib/axios";
+import { useEffect, useRef, useState } from "react";
 
 const ExportButton = ({ filters }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -12,8 +12,8 @@ const ExportButton = ({ filters }) => {
         setIsOpen(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleExport = async (isExtended) => {
@@ -33,14 +33,14 @@ const ExportButton = ({ filters }) => {
       const csvContent = convertToCSV(data, isExtended);
       
       // Descargar archivo
-      const bom = '\uFEFF';
+      const bom = "\uFEFF";
       const blob = new Blob([bom + csvContent], { 
         type: "text/csv;charset=utf-8" // Especificar charset
       });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `pedidos_${new Date().toISOString().split('T')[0]}.csv`;
+      a.download = `pedidos_${new Date().toISOString().split("T")[0]}.csv`;
       a.click();
       window.URL.revokeObjectURL(url);
 
@@ -106,27 +106,27 @@ const ExportButton = ({ filters }) => {
     });
 
     // Encabezados
-    const headers = columns.map(col => `"${col.header}"`).join(',');
+    const headers = columns.map(col => `"${col.header}"`).join(",");
     
-    return [headers, ...rows].join('\n');
+    return [headers, ...rows].join("\n");
   };
 
   // Función auxiliar para crear filas
   const createRow = (item, columns) => {
     return columns.map(col => {
       try {
-        const value = col.accessor.split('.').reduce((acc, key) => {
-          if (acc && typeof acc === 'object') {
-            return acc[key] ?? '';
+        const value = col.accessor.split(".").reduce((acc, key) => {
+          if (acc && typeof acc === "object") {
+            return acc[key] ?? "";
           }
-          return '';
+          return "";
         }, item);
         
         return `"${String(value).replace(/"/g, '""')}"`;
       } catch (error) {
         return '""';
       }
-    }).join(',');
+    }).join(",");
   };
 
   return (
@@ -136,7 +136,7 @@ const ExportButton = ({ filters }) => {
         disabled={isLoading}
         className="bg-verdeLogo text-white px-4 py-2 rounded hover:bg-green-600 disabled:opacity-50 cursor-pointer"
       >
-        {isLoading ? 'Exportando...' : 'Exportar CSV'}
+        {isLoading ? "Exportando..." : "Exportar CSV"}
       </button>
 
       {isOpen && (

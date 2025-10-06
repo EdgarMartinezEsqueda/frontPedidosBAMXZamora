@@ -1,9 +1,8 @@
-import React from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
-import api from "lib/axios";
 import ActionButtons from "components/buttons/ActionButtons";
+import api from "lib/axios";
 import { RESOURCES } from "utils/permisos";
 
 const TableCommunities = ({ currentPage, pageSize, filters, setTotalCommunities }) => {
@@ -18,13 +17,13 @@ const TableCommunities = ({ currentPage, pageSize, filters, setTotalCommunities 
       
         // Agregar filtros solo si tienen valores
         if (filters.comunidades.length > 0) {
-          params.comunidades = filters.comunidades.join(',');
+          params.comunidades = filters.comunidades.join(",");
         }
         if (filters.rutas.length > 0) {
-          params.rutas = filters.rutas.join(',');
+          params.rutas = filters.rutas.join(",");
         }
         if (filters.municipios.length > 0) {
-          params.municipios = filters.municipios.join(',');
+          params.municipios = filters.municipios.join(",");
       }
 
       const { data } = await api.get("/comunidades/paginadas/todas", { params });

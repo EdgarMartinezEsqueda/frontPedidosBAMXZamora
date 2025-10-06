@@ -1,24 +1,24 @@
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
 
 import { useAuth } from "context/AuthContext";
 import api from "lib/axios";
 
-import Navbar from "components/navbar/Navbar";
-import Footer from "components/footer/Footer";
-import TableOrder from "components/tables/orders/TableOrder";
 import AcceptButton from "components/buttons/Accept";
+import Footer from "components/footer/Footer";
+import Navbar from "components/navbar/Navbar";
 import Select from "components/selects/Select";
+import TableOrder from "components/tables/orders/TableOrder";
 
 const getTomorrowDate = () => {
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);  // Suma 1 día
   
   const year = tomorrow.getFullYear();
-  const month = String(tomorrow.getMonth() + 1).padStart(2, '0');
-  const day = String(tomorrow.getDate()).padStart(2, '0');
+  const month = String(tomorrow.getMonth() + 1).padStart(2, "0");
+  const day = String(tomorrow.getDate()).padStart(2, "0");
   
   return `${year}-${month}-${day}`;
 };
@@ -98,10 +98,11 @@ const NewOrder = () => {
   if (errorComunidades || errorRutas) return <div>Error al cargar los datos</div>;
   
   return (
-      <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-white dark:bg-gray-800">
       <Navbar />
       <main className="flex-1">
-        <h2 className="font-bold text-2xl w-full text-center pt-4 text-verdeLogo">Crear pedido para Ruta 
+        <h2 className="font-bold text-2xl w-full text-center pt-4 text-verdeLogo dark:text-green-400">
+          Crear pedido para Ruta 
           <Select
             name="idRuta"
             options={rutas}
@@ -113,14 +114,19 @@ const NewOrder = () => {
         {selectedRutaId && (
           <>
             <div className="flex justify-center items-center my-4">
-              <label htmlFor="fechaEntrega" className="block text-md px-2">Fecha de entrega: </label>
+              <label 
+                htmlFor="fechaEntrega" 
+                className="block text-md px-2 text-gray-700 dark:text-gray-200"
+              >
+                Fecha de entrega: 
+              </label>
               <input 
                 type="date" 
                 value={fechaEntrega}
                 onChange={(e) => setFechaEntrega(e.target.value)}
-                className="border p-2 rounded text-center"
+                className="border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-2 rounded text-center focus:border-verdeLogo focus:ring-2 focus:ring-verdeLogo focus:outline-none transition-colors"
                 required
-                />
+              />
             </div>
             <TableOrder 
               mode="create"
@@ -128,10 +134,12 @@ const NewOrder = () => {
               comunidades={comunidadesList}
               onDataChange={setNewPedido}
               selectedRutaId={selectedRutaId}
-              />
+            />
             <div className="flex justify-center items-center flex-col max-w-md m-auto">
-              <h2 className="block font-bold text-2xl text-rojoLogo">Total despensas</h2>
-              <h3 className="relative flex items-center text-amarilloLogo text-xl font-bold">
+              <h2 className="block font-bold text-2xl text-rojoLogo dark:text-red-400">
+                Total despensas
+              </h2>
+              <h3 className="relative flex items-center text-amarilloLogo dark:text-yellow-400 text-xl font-bold">
                 {newPedido.pedidoComunidad.reduce((total, pedido) => {
                   return total + 
                   (pedido.despensasCosto || 0) + 
@@ -140,8 +148,8 @@ const NewOrder = () => {
                   (pedido.despensasApadrinadas || 0);
                 }, 0)}
               </h3>
-              <h2 className="block text-md text-grisLogo dark:text-white">
-                <strong className="text-amarilloLogo">
+              <h2 className="block text-md text-grisLogo dark:text-gray-300">
+                <strong className="text-amarilloLogo dark:text-yellow-400">
                   {newPedido.pedidoComunidad.reduce((total, pedido) => {
                     return pedido.arpilladas 
                     ? total + 
@@ -151,7 +159,8 @@ const NewOrder = () => {
                     (pedido.despensasApadrinadas || 0)
                     : total;
                   }, 0)}
-                </strong> Arpilladas</h2>
+                </strong> Arpilladas
+              </h2>
             </div>
             <div className="flex justify-center py-4">
               <AcceptButton disabled={false} onClick={handleSubmit}/>
@@ -160,7 +169,7 @@ const NewOrder = () => {
         )}
       </main>
       <Footer />
-      </div>
+    </div>
   );
 };
 

@@ -1,16 +1,16 @@
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import toast from "react-hot-toast";
 
 import api from "lib/axios";
 
-import Navbar from "components/navbar/Navbar";
-import Footer from "components/footer/Footer";
-import Sidebar from "components/sidebar/Sidebar";
-import ChartComponent from "components/charts/Chart";
-import TSMetricsTable from "components/tables/reports/SocialWorkers";
 import RecentActivityCard from "components/cards/TSActivity";
+import ChartComponent from "components/charts/Chart";
 import ReportFilter from "components/filter/FilterReport";
+import Footer from "components/footer/Footer";
+import Navbar from "components/navbar/Navbar";
+import Sidebar from "components/sidebar/Sidebar";
+import TSMetricsTable from "components/tables/reports/SocialWorkers";
 
 const ReporteTS = () => {
   const [filter, setFilter] = useState({
@@ -45,7 +45,7 @@ const ReporteTS = () => {
       <Navbar />
       <div className="flex flex-1">
         <Sidebar />
-        <main className="flex-1 p-6 bg-gray-50">
+        <main className="flex-1 p-6 bg-gray-50 dark:bg-gray-700 space-y-6">
           <div className="grid grid-cols-1 gap-4">
             <div className="mb-4">
               <ReportFilter
@@ -60,8 +60,8 @@ const ReporteTS = () => {
                 title="Actividad de Trabajadores Sociales"
                 data={transformarDatosBarras(graficas.barras)}
                 bars={[
-                  { dataKey: 'pedidos', name: 'Pedidos', color: '#3B82F6' },
-                  { dataKey: 'despensas', name: 'Despensas', color: '#10B981' }
+                  { dataKey: "pedidos", name: "Pedidos", color: "#3B82F6" },
+                  { dataKey: "despensas", name: "Despensas", color: "#10B981" }
                 ]}
               />
               <ChartComponent
@@ -99,7 +99,7 @@ const ReporteTS = () => {
 // Nuevas funciones de transformación
 const transformarDatosBarras = (data) => {
   return data.map(item => ({
-    ruta: item.ts.substring(0, 12), // Mapear a 'ruta' que espera el componente
+    ruta: item.ts.substring(0, 12), // Mapear a "ruta" que espera el componente
     pedidos: item.pedidos,
     despensas: item.despensas
   }));

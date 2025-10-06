@@ -66,7 +66,7 @@ export const generateCobranzaPDF = (pedido, datosAdicionales, datosEfectivo) => 
 // HEADER
 function buildHeader(pedido) {
   return [
-    { text: "BANCO DIOCESANO DE ALIMENTOS DE LOS ALTOS A.C.", style: "header" },
+    { text: "BANCO DE ALIMENTOS DE ZAMORA A.C.", style: "header" },
     { text: "RECIBO CUOTA DE RECUPERACIÓN", style: "title" },
     {
       table: {
@@ -322,7 +322,7 @@ function buildDepositoSection() {
       widths: ["*"],
       body: [
         [{ text: "INFORMACIÓN DE DEPÓSITO BANCARIO", style: "denominationHeader", fontSize: 10 }],
-        [{ text: `Número de Cuenta: ${cuentaDeposito}`, style: "denominationCell", fontSize: 10, margin: [15, 5, 15, 5] }],
+        [{ text: `Número de Cuenta BANBAJIO: ${cuentaDeposito}`, style: "denominationCell", fontSize: 10, margin: [15, 5, 15, 5] }],
         [{ text: "INSTRUCCIONES:", style: "denominationHeader", fontSize: 9 }],
         [{ text: "• Depositar el efectivo recaudado en la cuenta bancaria indicada", style: "denominationCell", fontSize: 8, }],
         [{ text: "• Conservar el comprobante de depósito como respaldo", style: "denominationCell", fontSize: 8, }],

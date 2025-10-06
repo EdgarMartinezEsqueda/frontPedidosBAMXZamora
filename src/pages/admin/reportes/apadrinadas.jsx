@@ -1,21 +1,21 @@
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import toast from "react-hot-toast";
 
 import api from "lib/axios";
 
-import Navbar from "components/navbar/Navbar";
-import Footer from "components/footer/Footer";
-import Sidebar from "components/sidebar/Sidebar";
-import ChartComponent from "components/charts/Chart";
-import Pagination from "components/pagination/Pagination";
 import KPICard from "components/cards/KPICard";
-import TableComponent from "components/tables/reports/Summary";
+import ChartComponent from "components/charts/Chart";
 import ReportFilter from "components/filter/FilterReport";
+import Footer from "components/footer/Footer";
+import Navbar from "components/navbar/Navbar";
+import Pagination from "components/pagination/Pagination";
+import Sidebar from "components/sidebar/Sidebar";
+import TableComponent from "components/tables/reports/Summary";
 
 const formatDate = (dateString) => {
-  const options = { day: '2-digit', month: 'short', year: 'numeric' };
-  return new Date(dateString).toLocaleDateString('es-MX', options);
+  const options = { day: "2-digit", month: "short", year: "numeric" };
+  return new Date(dateString).toLocaleDateString("es-MX", options);
 };
 
 const Report = () => {
@@ -62,7 +62,7 @@ const Report = () => {
       <Navbar />
       <div className="flex flex-1">
         <Sidebar />
-        <main className="flex-1 p-6 bg-gray-50 space-y-6">
+        <main className="flex-1 p-6 bg-gray-50 dark:bg-gray-700 space-y-6">
           <div className="mb-4">
             <ReportFilter
               currentFilter={filter}
@@ -105,7 +105,7 @@ const Report = () => {
           {/* Sección de tops */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Top Trabajadores Sociales */}
-            <div className="bg-white p-4 rounded-lg shadow-md">
+            <div className="bg-white dark:bg-gray-700 p-4 rounded-lg shadow-md">
               <h3 className="text-lg font-semibold mb-4">Top Trabajadores Sociales</h3>
               <TableComponent
                 columns={[
@@ -117,7 +117,7 @@ const Report = () => {
             </div>
 
             {/* Top Comunidades */}
-            <div className="bg-white p-4 rounded-lg shadow-md">
+            <div className="bg-white dark:bg-gray-700 p-4 rounded-lg shadow-md">
               <h3 className="text-lg font-semibold mb-4">Top Comunidades</h3>
               <TableComponent
                 columns={[
@@ -131,7 +131,7 @@ const Report = () => {
           </div>
 
           {/* Últimos pedidos */}
-          <div className="bg-white p-4 rounded-lg shadow-md">
+          <div className="bg-white dark:bg-gray-700 p-4 rounded-lg shadow-md">
             <h3 className="text-lg font-semibold mb-4">Últimos pedidos registrados</h3>
             <TableComponent
               columns={[
@@ -144,7 +144,7 @@ const Report = () => {
                 { 
                   key: "comunidades", 
                   title: "Comunidades",
-                  render: (value) => value.join(', ')
+                  render: (value) => value.join(", ")
                 },
                 { key: "totalApadrinadas", title: "Total" }
               ]}

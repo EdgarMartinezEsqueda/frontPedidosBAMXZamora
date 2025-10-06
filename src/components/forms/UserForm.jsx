@@ -1,8 +1,7 @@
-import { useState, useEffect } from "react";
 import AcceptButton from "components/buttons/Accept";
+import { useEffect, useState } from "react";
 
 import { useAuth } from "context/AuthContext";
-import { hasPermission } from "utils/permisos";
 
 const UserForm = ({ onSubmit, isSubmitting, existingUser, newUser = false }) => {
   const initialData = {
@@ -87,9 +86,8 @@ const UserForm = ({ onSubmit, isSubmitting, existingUser, newUser = false }) => 
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Campos del formulario */}
       <div>
-        <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="username" className="block text-sm font-medium text-gray-700 dark:text-gray-200">
           Nombre de usuario
         </label>
         <input
@@ -98,14 +96,14 @@ const UserForm = ({ onSubmit, isSubmitting, existingUser, newUser = false }) => 
           id="username"
           value={userData.username}
           onChange={handleInputChange}
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-verdeLogo focus:outline-none focus:ring-2 focus:ring-verdeLogo"
+          className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 focus:border-verdeLogo focus:outline-none focus:ring-2 focus:ring-verdeLogo transition-colors"
           autoComplete="off"
         />
-        {clientErrors.username && <p className="text-red-500 text-sm">{clientErrors.username}</p>}
+        {clientErrors.username && <p className="text-red-500 dark:text-red-400 text-sm mt-1">{clientErrors.username}</p>}
       </div>
 
       <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-200">
           Correo electrónico
         </label>
         <input
@@ -114,15 +112,15 @@ const UserForm = ({ onSubmit, isSubmitting, existingUser, newUser = false }) => 
           id="email"
           value={userData.email}
           onChange={handleInputChange}
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-verdeLogo focus:outline-none focus:ring-2 focus:ring-verdeLogo"
+          className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 focus:border-verdeLogo focus:outline-none focus:ring-2 focus:ring-verdeLogo transition-colors"
           autoComplete="off"
         />
-        {clientErrors.email && <p className="text-red-500 text-sm">{clientErrors.email}</p>}
+        {clientErrors.email && <p className="text-red-500 dark:text-red-400 text-sm mt-1">{clientErrors.email}</p>}
       </div>
 
       { !newUser && user.data.rol === "Direccion" && 
         (<div>
-          <label htmlFor="rol" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="rol" className="block text-sm font-medium text-gray-700 dark:text-gray-200">
             Rol
           </label>
           <select 
@@ -130,7 +128,7 @@ const UserForm = ({ onSubmit, isSubmitting, existingUser, newUser = false }) => 
             id="rol"
             value={userData.rol}
             onChange={handleInputChange}
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-verdeLogo focus:outline-none focus:ring-2 focus:ring-verdeLogo"
+            className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 focus:border-verdeLogo focus:outline-none focus:ring-2 focus:ring-verdeLogo transition-colors"
             autoComplete="off">
               <option value="Almacen">Almacen</option>
               <option value="Consejo">Consejo</option>
@@ -142,7 +140,7 @@ const UserForm = ({ onSubmit, isSubmitting, existingUser, newUser = false }) => 
         </div>) }
 
       <div>
-        <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-200">
           {existingUser ? "Nueva contraseña" : "Contraseña"}
         </label>
         <input
@@ -151,14 +149,14 @@ const UserForm = ({ onSubmit, isSubmitting, existingUser, newUser = false }) => 
           id="password"
           value={userData.password}
           onChange={handleInputChange}
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-verdeLogo focus:outline-none focus:ring-2 focus:ring-verdeLogo"
+          className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 focus:border-verdeLogo focus:outline-none focus:ring-2 focus:ring-verdeLogo transition-colors"
           autoComplete="new-password"
         />
-        {clientErrors.password && <p className="text-red-500 text-sm">{clientErrors.password}</p>}
+        {clientErrors.password && <p className="text-red-500 dark:text-red-400 text-sm mt-1">{clientErrors.password}</p>}
       </div>
 
       <div>
-        <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-200">
           Confirmar contraseña
         </label>
         <input
@@ -167,11 +165,11 @@ const UserForm = ({ onSubmit, isSubmitting, existingUser, newUser = false }) => 
           id="confirmPassword"
           value={userData.confirmPassword}
           onChange={handleInputChange}
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-verdeLogo focus:outline-none focus:ring-2 focus:ring-verdeLogo"
+          className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 focus:border-verdeLogo focus:outline-none focus:ring-2 focus:ring-verdeLogo transition-colors"
           autoComplete="new-password"
         />
         {clientErrors.confirmPassword && (
-          <p className="text-red-500 text-sm">{clientErrors.confirmPassword}</p>
+          <p className="text-red-500 dark:text-red-400 text-sm mt-1">{clientErrors.confirmPassword}</p>
         )}
       </div>
 
@@ -183,9 +181,9 @@ const UserForm = ({ onSubmit, isSubmitting, existingUser, newUser = false }) => 
             id="verificado"
             checked={userData.verificado}
             onChange={handleInputChange}
-            className="h-4 w-4 text-verdeLogo focus:ring-verdeLogo border-gray-300 rounded"
+            className="h-4 w-4 text-verdeLogo focus:ring-verdeLogo border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded"
           />
-          <label htmlFor="verificado" className="ml-2 block text-sm text-gray-900">
+          <label htmlFor="verificado" className="ml-2 block text-sm text-gray-900 dark:text-gray-100">
             Verificado
           </label>
         </div>) 
