@@ -14,7 +14,7 @@ const CommunityForm = ({ onSubmit, isSubmitting, existingCommunity }) => {
     direccion: "",
     idRuta: "",
     notas: "",
-    costoPaquete: 170
+    costoPaquete: 0
   });
 
   // Inicializar datos si estamos editando
