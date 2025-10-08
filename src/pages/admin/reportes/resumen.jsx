@@ -44,7 +44,7 @@ const Report = () => {
     topRutas,
     topTrabajadores
   } = reportesData;
-  
+  console.log(reportesData, rutasDevoluciones.map( ({ ruta, total }) => [ruta, total] ));
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -88,8 +88,8 @@ const Report = () => {
                 items={topRutas}
               />
               <TopList
-                title="Rutas con mas devoluciones (despensas)"
-                items={rutasDevoluciones}
+                title="Rutas con mas devoluciones (despensas totales)"
+                items={rutasDevoluciones.map( ({ ruta, total }) => [ruta, total] )}
               />
             </div>
 

@@ -171,7 +171,23 @@ const OrderPage = () => {
     const totalEfectivo = efectivo ? Number(efectivo.totalEfectivo) : 0;
     const diferencia = totalEfectivo - pedidoData.total;
     const tieneDiferencia = Math.abs(diferencia) > 1;
-    const usuarioEfectivo =  efectivo.usuario.username;
+    const usuarioEfectivo = efectivo?.usuario.username;
+
+    // Detectar si tiene desglose
+    const tieneDesglose = 
+      (pedidoData.devolucionesCosto || 0) > 0 ||
+      (pedidoData.devolucionesMedioCosto || 0) > 0 ||
+      (pedidoData.devolucionesSinCosto || 0) > 0 ||
+      (pedidoData.devolucionesApadrinadas || 0) > 0;
+
+    const totalDevoluciones = tieneDesglose
+      ? (pedidoData.devolucionesCosto || 0) +
+        (pedidoData.devolucionesMedioCosto || 0) +
+        (pedidoData.devolucionesSinCosto || 0) +
+        (pedidoData.devolucionesApadrinadas || 0)
+      : (pedidoData.devoluciones ?? 0);
+console.log({pedidoData, tieneDesglose, totalDevoluciones});
+    const [mostrarDesgloseDevoluciones, setMostrarDesgloseDevoluciones] = useState(false);
 
     return (
       <div className="max-w-2xl mx-auto p-4 bg-gray-50 dark:bg-gray-800 rounded-lg shadow-sm mt-4">
@@ -183,9 +199,41 @@ const OrderPage = () => {
           <div className="flex items-center gap-2 justify-center">
             <span className="font-semibold text-gray-600 dark:text-gray-400">Despensas retornadas:</span>
             <span className="text-rojoLogo dark:text-red-400 font-bold text-lg">
-              {pedidoData.devoluciones ?? 0}
+              {totalDevoluciones}
             </span>
-          </div>
+            {tieneDesglose && (
+              <button
+                onClick={() => setMostrarDesgloseDevoluciones(!mostrarDesgloseDevoluciones)}
+                className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
+              >
+                {mostrarDesgloseDevoluciones ? "Ocultar" : "Ver"} desglose
+              </button>
+            )}
+
+          {/* Desglose de devoluciones */}
+          {mostrarDesgloseDevoluciones && tieneDesglose && (
+            <div className="mt-2 p-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg w-full">
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                <div className="flex justify-between p-2 bg-blue-50 dark:bg-blue-900/30 rounded">
+                  <span>Con costo:</span>
+                  <span className="font-semibold">{pedidoData.devolucionesCosto || 0}</span>
+                </div>
+                <div className="flex justify-between p-2 bg-green-50 dark:bg-green-900/30 rounded">
+                  <span>Medio costo:</span>
+                  <span className="font-semibold">{pedidoData.devolucionesMedioCosto || 0}</span>
+                </div>
+                <div className="flex justify-between p-2 bg-yellow-50 dark:bg-yellow-900/30 rounded">
+                  <span>Sin costo:</span>
+                  <span className="font-semibold">{pedidoData.devolucionesSinCosto || 0}</span>
+                </div>
+                <div className="flex justify-between p-2 bg-purple-50 dark:bg-purple-900/30 rounded">
+                  <span>Apadrinadas:</span>
+                  <span className="font-semibold">{pedidoData.devolucionesApadrinadas || 0}</span>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
           
           <div className="flex items-center gap-2 justify-center">
             <span className="font-semibold text-gray-600 dark:text-gray-400">Hora de llegada:</span>

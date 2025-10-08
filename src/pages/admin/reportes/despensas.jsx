@@ -4,10 +4,12 @@ import toast from "react-hot-toast";
 
 import api from "lib/axios";
 
+import BadgeDevolucion from "components/badges/BadgeDevolucion";
 import KPICard from "components/cards/KPICard";
 import ChartComponent from "components/charts/Chart";
 import ReportFilter from "components/filter/FilterReport";
 import Footer from "components/footer/Footer";
+import DetalleDevolucionesModal from "components/modals/DetalleDevolucionesModal";
 import Navbar from "components/navbar/Navbar";
 import Pagination from "components/pagination/Pagination";
 import SearchInput from "components/search/Search";
@@ -23,6 +25,7 @@ const Report = () => {
   const [currentPage, setCurrentPage] = useState(1);  // Estado para paginación de comunidades
   const [searchTerm, setSearchTerm] = useState(""); // Estado para  la busqueda de comunidades
   const [showAllRoutes, setShowAllRoutes] = useState(false);  // Estado para mostrar todas las rutas
+  const [devolucionSeleccionada, setDevolucionSeleccionada] = useState(null);
   const itemsPerPage = 10; // Número de elementos por página
   // Nuevos estados para tabla detallada
   const [currentDetailPage, setCurrentDetailPage] = useState(1);
@@ -177,42 +180,52 @@ const Report = () => {
           </div>
 
           {/* Tendencia de Devoluciones */}
-          <div className="space-y-6">
-            <h2 className="text-xl font-semibold">Tendencia de Devoluciones</h2>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <ChartComponent
-              type="line"
-              title="Devoluciones por Mes"
-              data={tendenciaDevoluciones.mensual}
-              bars={[{ 
-                dataKey: "total",  // ← Asegúrate que este coincida con tu data
-                name: "Devoluciones", 
-                color: "#EF4444" 
-              }]}
-            />
-              <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-semibold">Por Ruta</h3>
-                  <button
-                    onClick={() => setShowAllRoutes(!showAllRoutes)}
-                    className="text-blue-600 text-sm"
+            <table className="w-full border-separate border-spacing-0 rounded-2xl overflow-hidden shadow-md">
+              <thead className="bg-gray-100 dark:bg-gray-800">
+                <tr>
+                  <th className="text-left p-3 text-sm font-semibold text-gray-700 dark:text-gray-200">
+                    Ruta
+                  </th>
+                  <th className="text-left p-3 text-sm font-semibold text-gray-700 dark:text-gray-200">
+                    Devoluciones
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {(showAllRoutes 
+                  ? tendenciaDevoluciones.porRuta 
+                  : tendenciaDevoluciones.porRuta.slice(0, 5)
+                ).map((item, index) => (
+                  <tr 
+                    key={index} 
+                    className="border-b last:border-0 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                   >
-                    {showAllRoutes ? "Mostrar menos" : "Ver todas"}
-                  </button>
-                </div>
-                <TableComponent
-                  columns={[
-                    { key: "ruta", title: "Ruta" },
-                    { key: "total", title: "Devoluciones" }
-                  ]}
-                  data={showAllRoutes 
-                    ? tendenciaDevoluciones.porRuta 
-                    : tendenciaDevoluciones.porRuta.slice(0, 5)
-                  }
-                />
-              </div>
-            </div>
-          </div>
+                    <td className="p-3 text-gray-800 dark:text-gray-100 dark:bg-gray-700">
+                      {item.ruta}
+                    </td>
+                    <td className="p-3 text-right dark:bg-gray-700">
+                      <BadgeDevolucion
+                        devoluciones={{
+                          total: item.total,
+                          desglose: item.desglose
+                        }}
+                        onClick={() => setDevolucionSeleccionada({
+                          total: item.total,
+                          desglose: item.desglose
+                        })}
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          {/* Modal fuera del contenedor */}
+          {devolucionSeleccionada && (
+            <DetalleDevolucionesModal
+              devoluciones={devolucionSeleccionada}
+              onClose={() => setDevolucionSeleccionada(null)}
+            />
+          )}
 
           {/* Promedios por Ruta */}
           <div className="space-y-4">

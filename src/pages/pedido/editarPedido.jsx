@@ -32,16 +32,35 @@ const EditOrder = ( ) => {
   const [editableData, setEditableData] = useState({
     fechaEntrega: "",
     estado: "pendiente",
+    // Devoluciones desglosadas
+    devolucionesCosto: 0,
+    devolucionesMedioCosto: 0,
+    devolucionesSinCosto: 0,
+    devolucionesApadrinadas: 0,
+    // legacy
     devoluciones: 0,
     pedidoComunidad: [],
   });
-  
+console.log(editableData)
   useEffect(() => {
     if (pedido) {
+      // Detectar si tiene desglose o es legacy
+      const tieneDesglose = 
+        (pedido.devolucionesCosto || 0) > 0 ||
+        (pedido.devolucionesMedioCosto || 0) > 0 ||
+        (pedido.devolucionesSinCosto || 0) > 0 ||
+        (pedido.devolucionesApadrinadas || 0) > 0;
+
       setEditableData({
         fechaEntrega: pedido.fechaEntrega || "",
         estado: pedido.estado || "pendiente",
-        devoluciones: pedido.devoluciones ?? 0, // Previene null
+        // Si es legacy, inicializar en 0 los desglosados
+        devolucionesCosto: pedido.devolucionesCosto || 0,
+        devolucionesMedioCosto: pedido.devolucionesMedioCosto || 0,
+        devolucionesSinCosto: pedido.devolucionesSinCosto || 0,
+        devolucionesApadrinadas: pedido.devolucionesApadrinadas || 0,
+        // Mantener devoluciones legacy
+        devoluciones: tieneDesglose ? 0 : (pedido.devoluciones ?? 0),
         horaLlegada: pedido.horaLlegada ?? "",
         idRuta: pedido.idRuta,
         pedidoComunidad: pedido.pedidoComunidad.map((comunidad) => ({
@@ -54,7 +73,7 @@ const EditOrder = ( ) => {
         })),
       });
     }
-  }, [pedido]);  
+  }, [pedido]);
 
   // Mutaciones
   const updateMutation = useMutation({
@@ -78,6 +97,10 @@ const EditOrder = ( ) => {
       fechaEntrega: data.fechaEntrega,
       pedidoComunidad: data.pedidoComunidad,
       devoluciones: data.devoluciones,
+      devolucionesCosto: data.devolucionesCosto,
+      devolucionesMedioCosto: data.devolucionesCosto,
+      devolucionesSinCosto: data.devolucionesCosto,
+      devolucionesApadrinadas: data.devolucionesCosto,
       horaLlegada: data.horaLlegada,
       estado: "finalizado",
       efectivo: data.efectivo
@@ -114,6 +137,8 @@ const EditOrder = ( ) => {
   const handleSave = () => updateMutation.mutate(editableData);
 
   const handleFinalize = () => {
+    editableData.devoluciones = editableData.devolucionesCosto + editableData.devolucionesMedioCosto + editableData.devolucionesSinCosto + editableData.devolucionesApadrinadas;
+
     if (editableData.devoluciones < 0) {
       toast.error("Las despensas regresadas no pueden ser negativas");
       return;
@@ -241,14 +266,86 @@ const EditOrder = ( ) => {
 
           <div className="flex flex-col gap-2">
             <label className="text-rojoLogo font-bold">Despensas regresadas</label>
-            <input
-              type="number"
-              min="0"
-              value={editableData.devoluciones}
-              onChange={(e) => setEditableData({ ...editableData, devoluciones: Math.max(0, e.target.valueAsNumber) })}
-              className="p-2 border rounded"
-              disabled={disabled || editableData.estado === "finalizado"}
-            />
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col gap-2">
+                <label className="text-blue-600 dark:text-blue-400 font-semibold text-sm">
+                  Con costo
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  value={editableData.devolucionesCosto}
+                  onChange={(e) => setEditableData({ 
+                    ...editableData, 
+                    devolucionesCosto: Math.max(0, e.target.valueAsNumber || 0) 
+                  })}
+                  className="p-2 border rounded text-sm"
+                  disabled={disabled || editableData.estado === "finalizado"}
+                />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label className="text-green-600 dark:text-green-400 font-semibold text-sm">
+                  Medio costo
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  value={editableData.devolucionesMedioCosto}
+                  onChange={(e) => setEditableData({ 
+                    ...editableData, 
+                    devolucionesMedioCosto: Math.max(0, e.target.valueAsNumber || 0) 
+                  })}
+                  className="p-2 border rounded text-sm"
+                  disabled={disabled || editableData.estado === "finalizado"}
+                />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label className="text-yellow-600 dark:text-yellow-400 font-semibold text-sm">
+                  Sin costo
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  value={editableData.devolucionesSinCosto}
+                  onChange={(e) => setEditableData({ 
+                    ...editableData, 
+                    devolucionesSinCosto: Math.max(0, e.target.valueAsNumber || 0) 
+                  })}
+                  className="p-2 border rounded text-sm"
+                  disabled={disabled || editableData.estado === "finalizado"}
+                />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label className="text-purple-600 dark:text-purple-400 font-semibold text-sm">
+                  Apadrinadas
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  value={editableData.devolucionesApadrinadas}
+                  onChange={(e) => setEditableData({ 
+                    ...editableData, 
+                    devolucionesApadrinadas: Math.max(0, e.target.valueAsNumber || 0) 
+                  })}
+                  className="p-2 border rounded text-sm"
+                  disabled={disabled || editableData.estado === "finalizado"}
+                />
+              </div>
+            </div>
+
+            {/* Total de devoluciones */}
+            <div className="mt-2 p-3 bg-red-50 dark:bg-red-900/20 rounded-lg text-center">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Total devolucionesDevolucion:</span>
+              <span className="ml-2 text-xl font-bold text-red-600 dark:text-red-400">
+                {editableData.devolucionesCosto + 
+                editableData.devolucionesMedioCosto + 
+                editableData.devolucionesSinCosto + 
+                editableData.devolucionesApadrinadas}
+              </span>
+            </div>
           </div>
         
           {hasPermission(user.data, RESOURCES.PEDIDOS, "update", pedido.idTs) &&
@@ -266,7 +363,14 @@ const EditOrder = ( ) => {
             onClose={() => setShowEfectivoModal(false)}
             onConfirm={handleFinalizeWithEfectivo}
             isLoading={finalizeMutation.isPending}
-            expectedTotal={pedido?.total || 0} // ← Pasar el total calculado
+            expectedTotal={editableData.pedidoComunidad.reduce((total, com) => {
+              const costo = Number(com.comunidad.costoPaquete || 0);
+              return total + 
+                (com.despensasCosto || 0) * costo +
+                (com.despensasMedioCosto || 0) * (costo / 2) +
+                (com.despensasSinCosto || 0) * 0 +
+                (com.despensasApadrinadas || 0) * 0;
+            }, 0)}
           />
         </div>
       </main>
