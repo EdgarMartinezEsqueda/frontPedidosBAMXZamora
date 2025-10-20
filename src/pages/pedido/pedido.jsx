@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "context/AuthContext";
 import api from "lib/axios";
+import { useRef } from "react";
 import toast from "react-hot-toast";
 import { useParams } from "react-router";
 import { hasPermission, RESOURCES } from "utils/permisos";
@@ -12,12 +13,15 @@ import CollectionSection from "components/order/CollectionSection";
 import OrderFinalDetails from "components/order/OrderFinalDetails";
 import OrderHeader from "components/order/OrderHeader";
 import OrderSummary from "components/order/OrderSummary";
+import Print from "components/print/Print";
 import TableOrder from "components/tables/orders/TableOrder";
 
 const OrderPage = () => {
-  const { id } = useParams();
+  const { id }
+   = useParams();
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const tableRef = useRef(null);
 
   const { data: pedidoData, isLoading, isError, error: errorPedido } = useQuery({
     queryKey: ["pedido", id],
@@ -87,8 +91,12 @@ const OrderPage = () => {
       <Navbar />
       <main className="flex-1">
         <OrderHeader pedidoData={pedidoData} id={id} />
+        
+        <div ref={tableRef}>
+          <TableOrder mode="view" data={pedidoData} />
+        </div>
 
-        <TableOrder mode="view" data={pedidoData} />
+        <Print contentRef={tableRef} />
 
         <OrderSummary pedidoData={pedidoData} />
 
