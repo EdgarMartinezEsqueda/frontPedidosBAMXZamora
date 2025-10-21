@@ -22,8 +22,11 @@ const OrderHeader = ({ pedidoData, id }) => {
             Hecho por: <strong className="text-grisLogo">{pedidoData.usuario.username}</strong>
           </h3>
         </div>
-        <div className="self-center md:self-start">
+        <div className="self-center md:self-start print:hidden">
           <ExportSingleOrderButton pedido={pedidoData} />
+        </div>
+        <div className="self-center md:self-start hidden print:block">
+          <img src="https://bamxzamora.org/assets/images/zamora.webp"  className="h-10"/>
         </div>
       </div>
     </div>
