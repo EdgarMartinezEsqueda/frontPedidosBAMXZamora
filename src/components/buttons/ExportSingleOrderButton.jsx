@@ -30,7 +30,6 @@ const ExportSingleOrderButton = ({ pedido }) => {
       { header: "Despensas Medio Costo", accessor: "pedido.pedidoComunidad.despensasMedioCosto" },
       { header: "Despensas Sin Costo", accessor: "pedido.pedidoComunidad.despensasSinCosto" },
       { header: "Despensas Apadrinadas", accessor: "pedido.pedidoComunidad.despensasApadrinadas" },
-      { header: "Arpilladas", accessor: "pedido.pedidoComunidad.arpilladas" },
       { header: "Observaciones", accessor: "pedido.pedidoComunidad.observaciones" }
     ];
 

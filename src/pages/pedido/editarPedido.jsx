@@ -244,19 +244,6 @@ const EditOrder = () => {
                 (pedido.despensasApadrinadas || 0);
             }, 0)}
           </h3>
-          <h2 className="block text-md text-grisLogo dark:text-white">
-            <strong className="text-amarilloLogo">
-              {editableData.pedidoComunidad.reduce((total, pedido) => {
-                return pedido.arpilladas 
-                  ? total + 
-                    (pedido.despensasCosto || 0) + 
-                    (pedido.despensasMedioCosto || 0) + 
-                    (pedido.despensasSinCosto || 0) + 
-                    (pedido.despensasApadrinadas || 0)
-                  : total;
-              }, 0)}
-            </strong> Arpilladas
-          </h2>
         </div>
 
         {/* Despensas regresadas, hora de llegada y estado */}

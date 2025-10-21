@@ -8,7 +8,6 @@ const ResponsiveOrderTable = ({ mode, data, handleChange }) => {
     "Sin Costo",
     "Apadrinadas",
     "Comité",
-    "Arpilladas",
     "Observaciones"
   ];
 
@@ -42,7 +41,7 @@ const ResponsiveOrderTable = ({ mode, data, handleChange }) => {
                     ? "text-gray-900 dark:text-white" 
                     : "text-gray-500 dark:text-gray-300"
                 }
-                    ${["Observaciones","Arpilladas"].includes(header)  && "print:hidden"} }`}
+                    ${["Observaciones"].includes(header)  && "print:hidden"} }`}
               >
                 {header}
               </th>
@@ -101,39 +100,6 @@ const ResponsiveOrderTable = ({ mode, data, handleChange }) => {
               </td>
               ))}
 
-              {/* Arpilladas */}
-              <td
-                data-th="Arpilladas"
-                className="block md:table-cell px-4 py-2 text-sm relative md:text-center print:hidden"
-              >
-                <div className="flex justify-between items-center md:block gap-2">
-                  <span className="text-gray-400 md:hidden">Arpilladas</span>
-
-                  {mode === "view" ? (
-                    <span className={`px-2 py-1 rounded-full text-xs ${
-                      item.arpilladas
-                        ? "bg-green-100 text-green-800 dark:bg-green-800/30 dark:text-green-500"
-                        : "bg-red-100 text-red-800 dark:bg-red-800/30 dark:text-red-500"
-                    }`}>
-                      {item.arpilladas ? "Sí" : "No"}
-                    </span>
-                  ) : (
-                    <label className="inline-flex items-center cursor-pointer relative">
-                      <input
-                        type="checkbox"
-                        checked={item.arpilladas || false}
-                        onChange={(e) =>
-                          handleChange(rowIndex, "arpilladas", e.target.checked)
-                        }
-                        className="sr-only peer"
-                      />
-                      <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-indigo-500 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600">
-                      </div>
-                    </label>
-                  )}
-                </div>
-              </td>
-
               {/* Observaciones */}
               <td
                 data-th="Observaciones"
@@ -166,8 +132,7 @@ const ResponsiveOrderTable = ({ mode, data, handleChange }) => {
               </td>
             ))}
 
-            {/* Arpilladas y Observaciones (vacíos o con guiones) */}
-            <td className="px-4 py-2 text-center print:hidden">-</td>
+            {/* Observaciones (vacíos o con guiones) */}
             <td className="px-4 py-2 text-center print:hidden">-</td>
           </tr>
         </tfoot>

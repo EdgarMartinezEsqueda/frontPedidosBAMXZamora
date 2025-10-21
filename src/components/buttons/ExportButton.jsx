@@ -73,7 +73,6 @@ const ExportButton = ({ filters }) => {
       { header: "Despensas Medio Costo", accessor: "pedidoComunidad.despensasMedioCosto" },
       { header: "Despensas Sin Costo", accessor: "pedidoComunidad.despensasSinCosto" },
       { header: "Despensas Apadrinadas", accessor: "pedidoComunidad.despensasApadrinadas" },
-      { header: "Arpilladas", accessor: "pedidoComunidad.arpilladas" },
       { header: "Observaciones", accessor: "pedidoComunidad.observaciones" }
     ];
 
