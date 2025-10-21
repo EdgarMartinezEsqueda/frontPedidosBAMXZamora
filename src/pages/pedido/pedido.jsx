@@ -140,15 +140,13 @@ const OrderPage = () => {
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <main className="flex-1">
-        <OrderHeader pedidoData={pedidoData} id={id} />
-        
         <div ref={tableRef}>
+          <OrderHeader pedidoData={pedidoData} id={id} />
           <TableOrder mode="view" data={pedidoData} />
+          <OrderSummary pedidoData={pedidoData} />
         </div>
 
         <Print contentRef={tableRef} />
-
-        <OrderSummary pedidoData={pedidoData} />
 
         {puedeActualizarPedido && !pedidoFinalizado && (
           <div className="flex justify-center">
