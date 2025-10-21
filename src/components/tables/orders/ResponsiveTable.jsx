@@ -42,7 +42,7 @@ const ResponsiveOrderTable = ({ mode, data, handleChange }) => {
                     ? "text-gray-900 dark:text-white" 
                     : "text-gray-500 dark:text-gray-300"
                 }
-                    ${header === "Observaciones" && "print:hidden"} }`}
+                    ${["Observaciones","Arpilladas"].includes(header)  && "print:hidden"} }`}
               >
                 {header}
               </th>
@@ -104,7 +104,7 @@ const ResponsiveOrderTable = ({ mode, data, handleChange }) => {
               {/* Arpilladas */}
               <td
                 data-th="Arpilladas"
-                className="block md:table-cell px-4 py-2 text-sm relative md:text-center"
+                className="block md:table-cell px-4 py-2 text-sm relative md:text-center print:hidden"
               >
                 <div className="flex justify-between items-center md:block gap-2">
                   <span className="text-gray-400 md:hidden">Arpilladas</span>
@@ -167,7 +167,7 @@ const ResponsiveOrderTable = ({ mode, data, handleChange }) => {
             ))}
 
             {/* Arpilladas y Observaciones (vacíos o con guiones) */}
-            <td className="px-4 py-2 text-center">-</td>
+            <td className="px-4 py-2 text-center print:hidden">-</td>
             <td className="px-4 py-2 text-center print:hidden">-</td>
           </tr>
         </tfoot>
