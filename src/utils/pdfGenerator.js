@@ -4,7 +4,7 @@ import { logoBase64 } from "utils/logoBase64";
 
 pdfMake.vfs = pdfFonts;
 
-// Constantes y configuración centralizada
+// ============ CONFIGURACIÓN ============
 const FONTS = {
   Roboto: {
     normal: "Roboto-Regular.ttf",
@@ -19,27 +19,16 @@ const STYLES = {
   title: { fontSize: 10, bold: true, alignment: "center", margin: [0, 0, 0, 5] },
   tableHeader: { bold: true, fontSize: 7, alignment: "center" },
   cellCenter: { alignment: "center", fontSize: 7 },
-  total: { fontSize: 9, bold: true, margin: [0, 10, 0, 10] },
-  depositInfo: { fontSize: 8, bold: true, alignment: "center", margin: [0, 5, 0, 5] },
-  efectivoTitle: { fontSize: 10, bold: true, alignment: "center", margin: [0, 0, 0, 10] },
   denominationHeader: { fontSize: 7, bold: true, alignment: "center" },
   denominationCell: { fontSize: 7, alignment: "center" },
   totalRow: { fontSize: 10, bold: true, alignment: "center" }
 };
 
-const TABLE_LAYOUT = {
-  hLineWidth: () => 0.5,
-  vLineWidth: () => 0.5,
-  paddingTop: () => 1,
-  paddingBottom: () => 1
+const LAYOUT = {
+  default: { hLineWidth: () => 0.5, vLineWidth: () => 0.5, paddingTop: () => 1, paddingBottom: () => 1 },
+  minimal: { paddingTop: () => 1, paddingBottom: () => 1 }
 };
 
-const DIVIDER_LINE = {
-  canvas: [{ type: "line", x1: 0, y1: 0, x2: 515, y2: 0, dash: { length: 5 } }],
-  margin: [0, 0, 0, 2]
-};
-
-// Configuración de denominaciones
 const DENOMINACIONES = [
   { label: "$1,000", field: "billetes1000", amount: 1000, type: "Billetes" },
   { label: "$500", field: "billetes500", amount: 500, type: "Billetes" },
@@ -55,328 +44,295 @@ const DENOMINACIONES = [
   { label: "$0.50", field: "monedas50C", amount: 0.5, type: "Monedas" }
 ];
 
-// Utilidad para formatear moneda
-const formatCurrency = (value) => 
-  `$${parseFloat(value).toLocaleString("es-MX", { 
-    minimumFractionDigits: 2, 
-    maximumFractionDigits: 2 
-  })}`;
-
-// Utilidad para formatear fecha
-const formatDate = (date) => new Date(date).toLocaleDateString("es-MX");
-
-// Función principal optimizada
-export const generateCobranzaPDF = (pedido, datosAdicionales, datosEfectivo) => {
-  const content = [
-    ...buildSeccionCompleta(pedido, datosAdicionales, datosEfectivo),
-    DIVIDER_LINE,
-    ...buildSeccionCompleta(pedido, datosAdicionales, datosEfectivo), // Segunda copia
-    DIVIDER_LINE
-  ];
-
-  const docDefinition = {
-    pageMargins: [20, 20, 20, 20],
-    content,
-    styles: STYLES,
-    defaultStyle: { font: "Roboto" }
-  };
-
-  return pdfMake.createPdf(docDefinition, null, FONTS);
+// ============ UTILIDADES ============
+const fmt = {
+  currency: (val) => `$${parseFloat(val).toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+  date: (date) => new Date(date).toLocaleDateString("es-MX"),
+  number: (num) => num.toLocaleString("es-MX")
 };
 
-// Construir sección completa (reutilizable para ambas copias)
-function buildSeccionCompleta(pedido, datosAdicionales, datosEfectivo) {
+const divider = {
+  canvas: [{ type: "line", x1: 0, y1: 0, x2: 515, y2: 0, dash: { length: 5 } }],
+  margin: [0, 5, 0, 5]
+};
+
+// Helper genérico para crear tablas
+const createTable = (widths, body, layout = LAYOUT.default) => ({ table: { widths, body }, layout });
+
+// Helper para centrar contenido horizontalmente
+const center = (...items) => ({
+  columns: [{ width: "*", text: "" }, ...items, { width: "*", text: "" }]
+});
+
+// ============ GENERADOR PRINCIPAL ============
+export const generateCobranzaPDF = (pedidoData, cobranza, efectivo, transferencias, complementos) => {
+  return pdfMake.createPdf({
+    pageMargins: [20, 20, 20, 20],
+    content: [
+      ...buildSection(pedidoData, cobranza, efectivo, transferencias, complementos),
+      divider,
+      ...buildSection(pedidoData, cobranza, efectivo, transferencias, complementos)
+    ],
+    styles: STYLES,
+    defaultStyle: { font: "Roboto" }
+  }, null, FONTS);
+};
+
+// ============ CONSTRUCCIÓN DE SECCIONES ============
+function buildSection(pedidoData, cobranza, efectivo, transferencias, complementos) {
   return [
-    ...buildHeader(pedido),
-    buildCommunityTable(pedido),
-    buildExtrasSection(datosAdicionales),
-    buildTotalRecuperacion(pedido, datosAdicionales),
-    buildEfectivoSection(datosEfectivo)
+    buildHeader(pedidoData, cobranza),
+    buildCommunityTable(pedidoData),
+    buildTotalRow(pedidoData),
+    buildPaymentSection(efectivo, transferencias, complementos)
   ];
 }
 
-// HEADER optimizado
-function buildHeader(pedido) {
-  const { usuario, ruta, fechaEntrega } = pedido;
-
+function buildHeader(pedidoData, cobranza) {
+  const { usuario, ruta, fechaEntrega } = pedidoData;
+  
   return [
-    // Sección con logo y títulos principales
     {
       columns: [
+        { image: logoBase64.image.data, width: 45, height: 30 },
         {
-          // Logo a la izquierda
-          image: logoBase64.image.data, // Usa directamente la imagen importada
-          width: 45,
-          height: 30,
-        },
-        {
-          // Textos al centro
           stack: [
             { text: "BANCO DE ALIMENTOS DE ZAMORA A.C.", style: "header" },
             { text: `CUENTA BANBAJÍO: ${import.meta.env.VITE_CUENTA_DEPOSITO}`, style: "header" },
-            { text: "RECIBO CUOTA DE RECUPERACIÓN", style: "title" },
+            { text: "RECIBO CUOTA DE RECUPERACIÓN", style: "title" }
           ],
           width: "*"
-        }
+        },
+        { text: `FOLIO: ${cobranza.folio}`, style: "header" }
       ],
       margin: [0, 0, 0, 5]
     },
-    {
-      table: {
-        widths: ["*", "*", "*"],
-        body: [[
-          { text: `TS: ${usuario.username || "N/A"}`, style: "cellCenter" },
-          { text: `RUTA: ${ruta.nombre || "N/A"}`, style: "cellCenter" },
-          { text: `FECHA DE ENTREGA: ${formatDate(fechaEntrega)}`, style: "cellCenter" }
-        ]]
-      },
-      layout: "noBorders",
-      margin: [0, 0, 0, 5]
-    }
+    createTable(
+      ["*", "*", "*"],
+      [[
+        { text: `TS: ${usuario.username || "N/A"}`, style: "cellCenter" },
+        { text: `RUTA: ${ruta.nombre || "N/A"}`, style: "cellCenter" },
+        { text: `FECHA DE ENTREGA: ${fmt.date(fechaEntrega)}`, style: "cellCenter" }
+      ]],
+      "noBorders"
+    )
   ];
 }
 
-// TABLA COMUNIDADES optimizada
-function buildCommunityTable(pedido) {
-  const { pedidoComunidad } = pedido;
+function buildCommunityTable(pedidoData) {
+  const totals = { cuota: 0, medio: 0, sin: 0, apadrinadas: 0, total: 0, subtotal: 0 };
   
-  // Calcular totales en una sola iteración
-  const { rows, totales } = pedidoComunidad.reduce((acc, item) => {
-    const { comunidad, despensasCosto, despensasMedioCosto, despensasSinCosto, despensasApadrinadas } = item;
-    const costo = comunidad.costoPaquete;
-    const totalDespensas = despensasCosto + despensasMedioCosto + despensasSinCosto + despensasApadrinadas;
-    const subtotal = (costo * despensasCosto) + ((costo / 2) * despensasMedioCosto);
+  const rows = pedidoData.pedidoComunidad.map(item => {
+    const { comunidad, despensasCosto: cuota, despensasMedioCosto: medio, despensasSinCosto: sin, despensasApadrinadas: apad } = item;
+    const costo = parseFloat(comunidad.costoPaquete);
+    const totalDesp = cuota + medio + sin + apad;
+    const subtotal = (costo * cuota) + ((costo / 2) * medio);
 
-    acc.rows.push([
-      { text: comunidad.nombre, style: "cellCenter" },
-      { text: formatCurrency(costo), style: "cellCenter" },
-      { text: despensasCosto.toString(), style: "cellCenter" },
-      { text: despensasMedioCosto.toString(), style: "cellCenter" },
-      { text: despensasSinCosto.toString(), style: "cellCenter" },
-      { text: despensasApadrinadas.toString(), style: "cellCenter" },
-      { text: totalDespensas.toString(), style: "cellCenter" },
-      { text: formatCurrency(subtotal), style: "cellCenter" }
-    ]);
+    totals.cuota += cuota;
+    totals.medio += medio;
+    totals.sin += sin;
+    totals.apadrinadas += apad;
+    totals.total += totalDesp;
+    totals.subtotal += subtotal;
 
-    acc.totales.cuota += despensasCosto;
-    acc.totales.medio += despensasMedioCosto;
-    acc.totales.sin += despensasSinCosto;
-    acc.totales.apadrinadas += despensasApadrinadas;
-    acc.totales.total += totalDespensas;
-    acc.totales.subtotal += subtotal;
-
-    return acc;
-  }, { 
-    rows: [], 
-    totales: { cuota: 0, medio: 0, sin: 0, apadrinadas: 0, total: 0, subtotal: 0 } 
+    return [
+      comunidad.nombre,
+      fmt.currency(costo),
+      cuota,
+      medio,
+      sin,
+      apad,
+      totalDesp,
+      fmt.currency(subtotal)
+    ].map(text => ({ text, style: "cellCenter" }));
   });
 
-  return {
-    table: {
-      widths: ["*", "auto", "auto", "auto", "auto", "auto", "auto", "auto"],
-      headerRows: 1,
-      body: [
-        [
-          { text: "COMUNIDAD", style: "tableHeader" },
-          { text: "CUOTA", style: "tableHeader" },
-          { text: "CON CUOTA", style: "tableHeader" },
-          { text: "MEDIO COSTO", style: "tableHeader" },
-          { text: "SIN COSTO", style: "tableHeader" },
-          { text: "APADRINADAS", style: "tableHeader" },
-          { text: "TOTAL", style: "tableHeader" },
-          { text: "TOTAL $", style: "tableHeader" }
-        ],
-        ...rows,
-        [
-          { text: "TOTAL:", colSpan: 2, style: "cellCenter" }, {},
-          { text: totales.cuota.toString(), style: "cellCenter" },
-          { text: totales.medio.toString(), style: "cellCenter" },
-          { text: totales.sin.toString(), style: "cellCenter" },
-          { text: totales.apadrinadas.toString(), style: "cellCenter" },
-          { text: totales.total.toLocaleString("es-MX"), style: "cellCenter" },
-          { text: formatCurrency(totales.subtotal), style: "cellCenter" }
-        ]
+  return createTable(
+    ["*", "auto", "auto", "auto", "auto", "auto", "auto", "auto"],
+    [
+      ["COMUNIDAD", "CUOTA", "CON CUOTA", "MEDIO COSTO", "SIN COSTO", "APADRINADAS", "TOTAL", "TOTAL $"]
+        .map(text => ({ text, style: "tableHeader" })),
+      ...rows,
+      [
+        { text: "TOTAL:", colSpan: 2, style: "cellCenter" }, {},
+        ...Object.values(totals).slice(0, -1).map(v => ({ text: v.toString(), style: "cellCenter" })),
+        { text: fmt.currency(totals.subtotal), style: "cellCenter" }
       ]
-    },
-    layout: TABLE_LAYOUT
-  };
+    ]
+  );
 }
 
-// TABLA EXTRAS simplificada
-function buildExtrasSection(datosAdicionales) {
-  const { arpillasCantidad, arpillasImporte, excedentes, excedentesImporte } = datosAdicionales;
-
-  return {
-    table: {
-      widths: ["*", "auto", "auto"],
-      body: [
-        [{ text: "EXTRAS", colSpan: 3, style: "tableHeader" }, {}, {}],
-        [
-          { text: "CONCEPTO", style: "tableHeader" },
-          { text: "DETALLE", style: "tableHeader" },
-          { text: "IMPORTE", style: "tableHeader" }
-        ],
-        [
-          { text: "ARPILLAS", style: "cellCenter" },
-          { text: arpillasCantidad.toString(), style: "cellCenter" },
-          { text: formatCurrency(arpillasImporte), style: "cellCenter" }
-        ],
-        [
-          { text: "EXCEDENTES", style: "cellCenter" },
-          { text: excedentes, style: "cellCenter" },
-          { text: formatCurrency(excedentesImporte), style: "cellCenter" }
-        ]
-      ]
-    },
-    layout: TABLE_LAYOUT,
-    margin: [0, 10, 0, 0]
-  };
-}
-
-// TOTAL RECUPERACIÓN optimizado
-function buildTotalRecuperacion(pedido, datosAdicionales) {
-  const totalDespensas = pedido.pedidoComunidad.reduce((sum, item) => {
-    const { comunidad, despensasCosto, despensasMedioCosto } = item;
-    return sum + (comunidad.costoPaquete * despensasCosto) + 
-           ((comunidad.costoPaquete / 2) * despensasMedioCosto);
+function buildTotalRow(pedidoData) {
+  const total = pedidoData.pedidoComunidad.reduce((sum, { comunidad, despensasCosto, despensasMedioCosto }) => {
+    const costo = parseFloat(comunidad.costoPaquete);
+    return sum + (costo * despensasCosto) + ((costo / 2) * despensasMedioCosto);
   }, 0);
 
-  const totalGeneral = totalDespensas + datosAdicionales.arpillasImporte + datosAdicionales.excedentesImporte;
-
-  return {
-    columns: [
-      { width: "*", text: "" },
-      {
-        width: "auto",
-        table: {
-          body: [[
-            { text: "TOTAL RECUPERACIÓN POR RUTA:", bold: true, alignment: "right" },
-            { text: formatCurrency(totalGeneral), bold: true, alignment: "center" }
-          ]]
-        },
-        layout: "noBorders"
-      },
-      { width: "*", text: "" }
-    ],
+  return center({
+    width: "auto",
+    ...createTable(
+      ["auto", "auto"],
+      [[
+        { text: "TOTAL RECUPERACIÓN POR RUTA:", bold: true, alignment: "right" },
+        { text: fmt.currency(total), bold: true, alignment: "center" }
+      ]],
+      "noBorders"
+    ),
     margin: [0, 2, 0, 2]
-  };
+  });
 }
 
-// SECCIÓN EFECTIVO optimizada
-function buildEfectivoSection(datosEfectivo) {
-  if (!datosEfectivo || datosEfectivo.totalEfectivo === "0.00") {
-    return {
-      text: "NO SE REGISTRÓ EFECTIVO PARA ESTA RUTA",
-      style: "denominationHeader",
-      alignment: "center",
-      margin: [0, 20, 0, 20]
-    };
+// ============ SECCIÓN DE PAGOS ============
+function buildPaymentSection(efectivo, transferencias, complementos) {
+  const hasEfectivo = efectivo && parseFloat(efectivo.totalEfectivo) > 0;
+  const hasTransf = transferencias?.length > 0;
+  const hascomplementos = complementos?.length > 0;
+
+  if (!hasEfectivo && !hasTransf && !hascomplementos) {
+    return { text: "NO SE REGISTRÓ EFECTIVO, TRANSFERENCIAS NI complementos PARA ESTA RUTA", style: "denominationHeader", margin: [0, 20, 0, 20] };
   }
 
-  const denominacionesConValor = DENOMINACIONES
-    .map(d => ({ ...d, value: datosEfectivo[d.field] || 0 }))
-    .filter(d => d.value > 0);
+  const tables = [];
+  const totals = [];
 
-  const billetes = denominacionesConValor.filter(d => d.type === "Billetes");
-  const monedas = denominacionesConValor.filter(d => d.type === "Monedas");
+  // Efectivo
+  if (hasEfectivo) {
+    const denoms = DENOMINACIONES
+      .map(d => ({ ...d, value: efectivo[d.field] || 0 }))
+      .filter(d => d.value > 0);
 
-  const content = [];
+    const billetes = denoms.filter(d => d.type === "Billetes");
+    const monedas = denoms.filter(d => d.type === "Monedas");
 
-  // Crear tablas lado a lado
-  const tablasColumns = [
-    billetes.length > 0 && buildDenominacionTable("BILLETES", billetes),
-    monedas.length > 0 && buildDenominacionTable("MONEDAS", monedas)
-  ].filter(Boolean);
+    if (billetes.length) tables.push(buildDenomTable("BILLETES", billetes));
+    if (monedas.length) tables.push(buildDenomTable("MONEDAS", monedas));
+    
+    totals.push(["TOTAL EFECTIVO:", efectivo.totalEfectivo]);
+  }
 
-  if (tablasColumns.length > 0) {
-    content.push({
-      columns: [
-        { width: "*", text: "" }, // Espaciador izquierdo
-        ...tablasColumns,
-        { width: "*", text: "" }  // Espaciador derecho
-      ],
-      columnGap: 10,
-      margin: [0, 0, 0, 5]
-    });
+  // Transferencias
+  if (hasTransf) {
+    tables.push(buildTransferTable(transferencias));
+    const totalTransf = transferencias.reduce((sum, t) => sum + parseFloat(t.monto), 0);
+    totals.push(["TOTAL TRANSFERENCIAS:", totalTransf]);
+  }
+
+  // complementos
+  if (hascomplementos) {
+    tables.push(buildcomplementosTable(complementos));
+    const totalExc = complementos.reduce((sum, e) => sum + parseFloat(e.monto), 0);
+    totals.push(["TOTAL complementos:", totalExc]);
   }
 
   // Total general
-  content.push({
-    columns: [
-      { width: "*", text: "" },
-      {
-        width: "auto",
-        table: {
-          widths: [200, 100],
-          body: [[
-            { text: "TOTAL EFECTIVO RECAUDADO:", style: "totalRow", fontSize: 8 },
-            { text: formatCurrency(datosEfectivo.totalEfectivo), style: "totalRow", fontSize: 8 }
-          ]]
-        },
-        layout: {
-          paddingTop: () => 4,
-          paddingBottom: () => 4,
-          paddingLeft: () => 8,
-          paddingRight: () => 8
-        }
-      },
-      { width: "*", text: "" }
-    ],
-    margin: [0, 0, 0, 5]
-  });
+  if ((hasEfectivo ? 1 : 0) + (hasTransf ? 1 : 0) + (hascomplementos ? 1 : 0) > 1) {
+    const totalGen = (hasEfectivo ? parseFloat(efectivo.totalEfectivo) : 0) + 
+                     (hasTransf ? transferencias.reduce((s, t) => s + parseFloat(t.monto), 0) : 0) +
+                     (hascomplementos ? complementos.reduce((s, e) => s + parseFloat(e.monto), 0) : 0);
+    totals.push(["TOTAL GENERAL:", totalGen, true]);
+  }
+
+  const content = [
+    {
+      ...center(...tables),
+      columnGap: 10,
+      margin: [0, 5, 0, 5]
+    },
+    center({
+      width: "auto",
+      ...createTable(
+        [200, 100],
+        totals.map(([label, amount, bold]) => [
+          { text: label, style: "totalRow", fontSize: bold ? 9 : 8, bold },
+          { text: fmt.currency(amount), style: "totalRow", fontSize: bold ? 9 : 8, bold }
+        ]),
+        { paddingTop: () => 2, paddingBottom: () => 2, paddingLeft: () => 4, paddingRight: () => 4 }
+      ),
+      margin: [0, 0, 0, 5]
+    })
+  ];
 
   // Observaciones
-  if (datosEfectivo.observaciones) {
-    content.push({
-      table: {
-        widths: ["*"],
-        body: [
+  if (hasEfectivo && efectivo.observaciones) {
+    content.push(
+      createTable(
+        ["*"],
+        [
           [{ text: "OBSERVACIONES", style: "denominationHeader" }],
-          [{ text: datosEfectivo.observaciones, style: "denominationCell", margin: [5, 5, 5, 5] }]
-        ]
-      },
-      layout: {
-        paddingTop: () => 4,
-        paddingBottom: () => 4
-      },
-      margin: [0, 0, 0, 5]
-    });
+          [{ text: efectivo.observaciones, style: "denominationCell", margin: [5, 5, 5, 5] }]
+        ],
+        { paddingTop: () => 4, paddingBottom: () => 4 }
+      )
+    );
   }
 
   return content;
 }
 
-// Helper para construir tabla de denominaciones
-function buildDenominacionTable(titulo, items) {
-  const rows = items.map(item => [
-    { text: item.label, style: "denominationCell", fontSize: 6 },
-    { text: item.value.toString(), style: "denominationCell", fontSize: 6 },
-    { text: formatCurrency(item.value * item.amount), style: "denominationCell", fontSize: 6 }
-  ]);
+function buildDenomTable(title, items) {
+  const rows = items.map(({ label, value, amount }) => [
+    label, value, fmt.currency(value * amount)
+  ].map(text => ({ text, style: "denominationCell", fontSize: 6 })));
 
-  const subtotal = items.reduce((sum, item) => sum + (item.value * item.amount), 0);
+  const subtotal = items.reduce((sum, { value, amount }) => sum + (value * amount), 0);
 
   return {
-    width: "auto", // Cambio de 48% a auto para mejor centrado
-    table: {
-      widths: [45, 30, 45], // Reducido: 60→45, 40→30, 50→45
-      body: [
-        [{ text: titulo, colSpan: 3, style: "denominationHeader", fontSize: 7 }, {}, {}],
-        [
-          { text: "DENOM.", style: "header", fontSize: 6 },
-          { text: "CANT.", style: "header", fontSize: 6 },
-          { text: "SUBTOTAL", style: "header", fontSize: 6 }
-        ],
+    width: "auto",
+    ...createTable(
+      [45, 30, 45],
+      [
+        [{ text: title, colSpan: 3, style: "denominationHeader", fontSize: 7 }, {}, {}],
+        [{ text: "DENOM.", style: "header", fontSize: 6 }, { text: "CANT.", style: "header", fontSize: 6 }, { text: "SUBTOTAL", style: "header", fontSize: 6 }],
         ...rows,
-        [
-          { text: "SUBTOTAL:", colSpan: 2, style: "totalRow", fontSize: 7 }, {},
-          { text: formatCurrency(subtotal), style: "totalRow", fontSize: 7 }
-        ]
-      ]
-    },
-    layout: {
-      paddingTop: () => 1,
-      paddingBottom: () => 1
-    }
+        [{ text: "SUBTOTAL:", colSpan: 2, style: "totalRow", fontSize: 7 }, {}, { text: fmt.currency(subtotal), style: "totalRow", fontSize: 7 }]
+      ],
+      LAYOUT.minimal
+    )
+  };
+}
+
+function buildTransferTable(transferencias) {
+  const rows = transferencias.map(t => [
+    t.nombreRemitente || "Sin especificar",
+    fmt.currency(t.monto)
+  ].map(text => ({ text, style: "denominationCell", fontSize: 6 })));
+
+  const total = transferencias.reduce((sum, t) => sum + parseFloat(t.monto), 0);
+
+  return {
+    width: "auto",
+    ...createTable(
+      [90, 45],
+      [
+        [{ text: "TRANSFERENCIAS", colSpan: 2, style: "denominationHeader", fontSize: 7 }, {}],
+        [{ text: "REMITENTE", style: "header", fontSize: 6 }, { text: "MONTO", style: "header", fontSize: 6 }],
+        ...rows,
+        [{ text: "TOTAL:", style: "totalRow", fontSize: 7 }, { text: fmt.currency(total), style: "totalRow", fontSize: 7 }]
+      ],
+      LAYOUT.minimal
+    )
+  };
+}
+
+function buildcomplementosTable(complementos) {
+  const rows = complementos.map(e => [
+    e.producto || "Sin especificar",
+    fmt.currency(e.monto)
+  ].map(text => ({ text, style: "denominationCell", fontSize: 6 })));
+
+  const total = complementos.reduce((sum, e) => sum + parseFloat(e.monto), 0);
+
+  return {
+    width: "auto",
+    ...createTable(
+      [90, 45],
+      [
+        [{ text: "complementos", colSpan: 2, style: "denominationHeader", fontSize: 7 }, {}],
+        [{ text: "PRODUCTO", style: "header", fontSize: 6 }, { text: "MONTO", style: "header", fontSize: 6 }],
+        ...rows,
+        [{ text: "TOTAL:", style: "totalRow", fontSize: 7 }, { text: fmt.currency(total), style: "totalRow", fontSize: 7 }]
+      ],
+      LAYOUT.minimal
+    )
   };
 }

@@ -15,6 +15,7 @@ import OrderHeader from "components/order/OrderHeader";
 import OrderSummary from "components/order/OrderSummary";
 import Print from "components/print/Print";
 import TableOrder from "components/tables/orders/TableOrder";
+import { generateCobranzaPDF } from "utils/pdfGenerator";
 
 const OrderPage = () => {
   const { id }
@@ -40,13 +41,12 @@ const OrderPage = () => {
       return data;
     },
     onSuccess: (response) => {
-      toast.success(`Cobranza ${response.cobranza.folio} generada exitosamente`);
+      toast.success("Cobranza generada correctamente");
       queryClient.invalidateQueries(["pedido", id]);
     },
     onError: (error) => {
       const mensaje = error.response?.data?.message || "Error al generar cobranza";
       toast.error(mensaje);
-      console.error(error);
     }
   });
 
@@ -57,12 +57,58 @@ const OrderPage = () => {
       return data;
     },
     onSuccess: (response) => {
-      toast.success(`Cobranza ${response.cobranza.folio} regenerada exitosamente`);
+      toast.success("Cobranza generada correctamente");
       queryClient.invalidateQueries(["pedido", id]);
     },
     onError: (error) => {
       const mensaje = error.response?.data?.message || "Error al regenerar cobranza";
       toast.error(mensaje);
+    }
+  });
+
+  // Mutation para obtener datos completos de la cobranza
+  const descargarCobranzaMutation = useMutation({
+    mutationFn: async () => {
+      const { data } = await api.get(`/cobranzas/${id}`);
+      return data;
+    },
+    onSuccess: async (response) => {
+      // Generar PDF con los datos obtenidos
+      const { cobranza, efectivo, transferencias } = response;
+      
+      try {
+        const pdfDoc = await generateCobranzaPDF(
+          pedidoData, 
+          cobranza, 
+          efectivo, 
+          transferencias
+        );
+        
+        const buffer = await new Promise(resolve => {
+          pdfDoc.getBuffer(resolve);
+        });
+        
+        const pdfBlob = new Blob([buffer], { type: "application/pdf" });
+        const pdfUrl = URL.createObjectURL(pdfBlob);
+        const link = document.createElement("a");
+        link.href = pdfUrl;
+        link.download = `cobranza_${cobranza.folio}_${pedidoData.ruta.nombre}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        
+        setTimeout(() => {
+          document.body.removeChild(link);
+          URL.revokeObjectURL(pdfUrl);
+        }, 100);
+        
+        toast.success("Cobranza descargada");
+      } catch (error) {
+        toast.error("Error generando PDF");
+        console.error(error);
+      }
+    },
+    onError: (error) => {
+      toast.error("Error obteniendo datos de cobranza");
     }
   });
 
@@ -79,6 +125,10 @@ const OrderPage = () => {
       regenerarCobranzaMutation.mutate();
     }
   };
+
+  const handleDescargarCobranza = () => {
+    descargarCobranzaMutation.mutate();
+  }
 
   if (isLoading) return <div>Cargando...</div>;
   if (isError) return <div>Error: {errorPedido.message}</div>;
@@ -114,8 +164,10 @@ const OrderPage = () => {
             user={user}
             onGenerar={handleGenerarCobranza}
             onRegenerar={handleRegenerarCobranza}
+            onDescargar={handleDescargarCobranza}
             isGenerating={generarCobranzaMutation.isPending}
             isRegenerating={regenerarCobranzaMutation.isPending}
+            isDownloading={descargarCobranzaMutation.isPending}
           />
         )}
       </main>
