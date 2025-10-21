@@ -51,10 +51,10 @@ const fmt = {
   number: (num) => num.toLocaleString("es-MX")
 };
 
-const divider = {
+const getDivider = () => ({
   canvas: [{ type: "line", x1: 0, y1: 0, x2: 515, y2: 0, dash: { length: 5 } }],
   margin: [0, 5, 0, 5]
-};
+});
 
 // Helper genérico para crear tablas
 const createTable = (widths, body, layout = LAYOUT.default) => ({ table: { widths, body }, layout });
@@ -70,7 +70,7 @@ export const generateCobranzaPDF = (pedidoData, cobranza, efectivo, transferenci
     pageMargins: [20, 20, 20, 20],
     content: [
       ...buildSection(pedidoData, cobranza, efectivo, transferencias, complementos),
-      divider,
+      getDivider(),
       ...buildSection(pedidoData, cobranza, efectivo, transferencias, complementos)
     ],
     styles: STYLES,
@@ -233,23 +233,21 @@ function buildPaymentSection(efectivo, transferencias, complementos) {
   }
 
   const content = [
+    center(...tables),
     {
-      ...center(...tables),
-      columnGap: 10,
-      margin: [0, 5, 0, 5]
-    },
-    center({
-      width: "auto",
-      ...createTable(
-        [200, 100],
-        totals.map(([label, amount, bold]) => [
-          { text: label, style: "totalRow", fontSize: bold ? 9 : 8, bold },
-          { text: fmt.currency(amount), style: "totalRow", fontSize: bold ? 9 : 8, bold }
-        ]),
-        { paddingTop: () => 2, paddingBottom: () => 2, paddingLeft: () => 4, paddingRight: () => 4 }
-      ),
+      ...center({
+        width: "auto",
+        ...createTable(
+          [200, 100],
+          totals.map(([label, amount, bold]) => [
+            { text: label, style: "totalRow", fontSize: bold ? 9 : 8, bold },
+            { text: fmt.currency(amount), style: "totalRow", fontSize: bold ? 9 : 8, bold }
+          ]),
+          { paddingTop: () => 2, paddingBottom: () => 2, paddingLeft: () => 4, paddingRight: () => 4 }
+        )
+      }),
       margin: [0, 0, 0, 5]
-    })
+    }
   ];
 
   // Observaciones
