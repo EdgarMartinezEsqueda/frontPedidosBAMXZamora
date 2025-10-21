@@ -1,7 +1,7 @@
 import { FaFileInvoice } from "react-icons/fa";
 import { hasPermission, RESOURCES } from "utils/permisos";
 
-const CollectionSection = ({ pedidoData, user, onGenerar, onRegenerar, isGenerating, isRegenerating }) => {
+const CollectionSection = ({ pedidoData, user, onGenerar, onRegenerar, onDescargar, isGenerating, isRegenerating, isDownloading }) => {
   const formatearFechaHora = (fechaString) => {
     if (!fechaString) return "N/A";
     return new Date(fechaString).toLocaleString("es-MX", {
@@ -13,8 +13,7 @@ const CollectionSection = ({ pedidoData, user, onGenerar, onRegenerar, isGenerat
     });
   };
 
-  const { tieneCobranza, folio, fechaGeneracion, generadoPor, puedeGenerarCobranza, puedeRegenerarCobranza } = 
-    pedidoData.infoCobranza || {};
+  const { tieneCobranza, folio, fechaGeneracion, generadoPor, puedeGenerarCobranza, puedeRegenerarCobranza } = pedidoData.infoCobranza || {};
 
   if (!tieneCobranza && !puedeGenerarCobranza) return null;
 
@@ -28,6 +27,7 @@ const CollectionSection = ({ pedidoData, user, onGenerar, onRegenerar, isGenerat
               Cobranza Generada
             </h4>
           </div>
+          
           <div className="space-y-2 text-sm">
             <div>
               <span className="text-gray-600 dark:text-gray-400">Folio:</span>
@@ -43,15 +43,40 @@ const CollectionSection = ({ pedidoData, user, onGenerar, onRegenerar, isGenerat
             </div>
           </div>
 
-          {puedeRegenerarCobranza && hasPermission(user.data, RESOURCES.COBRANZAS, "update") && (
-            <button
-              onClick={onRegenerar}
-              disabled={isRegenerating}
-              className="mt-4 w-full px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 disabled:opacity-50 transition-colors"
-            >
-              {isRegenerating ? "Regenerando..." : "Regenerar Cobranza"}
-            </button>
-          )}
+          {/* Botones de acción */}
+          <div className="mt-4 space-y-2">
+            {/* Botón para descargar PDF */}
+            {hasPermission(user.data, RESOURCES.COBRANZAS, "read") && (
+              <button
+                onClick={onDescargar}
+                disabled={isDownloading}
+                className="w-full px-4 py-2 bg-verdeLogo text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
+              >
+                {isDownloading ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Generando PDF...
+                  </>
+                ) : (
+                  <>
+                    <FaFileInvoice />
+                    Descargar Cobranza (PDF)
+                  </>
+                )}
+              </button>
+            )}
+
+            {/* Botón para regenerar */}
+            {puedeRegenerarCobranza && hasPermission(user.data, RESOURCES.COBRANZAS, "update") && (
+              <button
+                onClick={onRegenerar}
+                disabled={isRegenerating}
+                className="w-full px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 disabled:opacity-50 transition-colors"
+              >
+                {isRegenerating? "Regenerando..." : "Regenerar Cobranza"}
+              </button>
+            )}
+          </div>
         </div>
       ) : puedeGenerarCobranza && hasPermission(user.data, RESOURCES.COBRANZAS, "create") && (
         <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
