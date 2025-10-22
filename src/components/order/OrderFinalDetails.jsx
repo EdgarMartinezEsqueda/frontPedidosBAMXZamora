@@ -1,4 +1,3 @@
-import ReturnToEditButton from "components/buttons/ReturnToEditButton";
 import { FaCoins, FaMoneyBillWave } from "react-icons/fa";
 import { MdOutlineAccountBalance } from "react-icons/md";
 import { hasPermission, RESOURCES } from "utils/permisos";
@@ -23,7 +22,6 @@ const OrderFinalDetails = ({ pedidoData, user, id }) => {
   const tieneDiferencia = Math.abs(diferencia) > 1;
 
   const puedeVerCobranzas = hasPermission(user.data, RESOURCES.COBRANZAS, "read", pedidoData.idTs);
-  const puedeRevertir = hasPermission(user.data, RESOURCES.PEDIDOS, "revert", pedidoData.idTs);
 
   return (
     <div className="max-w-2xl mx-auto p-4 bg-gray-50 dark:bg-gray-800 rounded-lg shadow-sm mt-4">
@@ -99,9 +97,6 @@ const OrderFinalDetails = ({ pedidoData, user, id }) => {
 
       {/* Transferencias */}
       {puedeVerCobranzas && <TransfersList transferencias={pedidoData.transferencias} />}
-
-      {/* Botón revertir */}
-      {puedeRevertir && <ReturnToEditButton id={id} />}
     </div>
   );
 };
