@@ -1,11 +1,11 @@
-import { useParams, useNavigate } from "react-router";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import toast from "react-hot-toast";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import api from "lib/axios";
+import toast from "react-hot-toast";
+import { useNavigate, useParams } from "react-router";
 
-import Navbar from "components/navbar/Navbar";
 import Footer from "components/footer/Footer";
 import RouteForm from "components/forms/RouteForm";
+import Navbar from "components/navbar/Navbar";
 
 const EditRoute = () => {
   const { id } = useParams();
@@ -22,8 +22,8 @@ const EditRoute = () => {
 
   // Mutación para actualizar la ruta
   const { mutate, isPending } = useMutation({
-    mutationFn: async (nombreRuta) => {
-      const { data } = await api.patch(`/rutas/${id}`, { nombre: nombreRuta });
+    mutationFn: async (routeData) => {
+      const { data } = await api.patch(`/rutas/${id}`, routeData);
       return data;
     },
     onSuccess: () => {
@@ -41,7 +41,12 @@ const EditRoute = () => {
       <div className="min-h-screen flex flex-col">
         <Navbar />
         <main className="flex-1 container mx-auto px-4 py-8 max-w-md text-center">
-          Cargando datos de la ruta...
+          <div className="flex items-center justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-verdeLogo"></div>
+            <span className="ml-3 text-gray-600 dark:text-gray-300">
+              Cargando datos de la ruta...
+            </span>
+          </div>
         </main>
         <Footer />
       </div>
@@ -52,8 +57,15 @@ const EditRoute = () => {
     return (
       <div className="min-h-screen flex flex-col">
         <Navbar />
-        <main className="flex-1 container mx-auto px-4 py-8 max-w-md text-center text-red-500">
-          Error: {error.message}
+        <main className="flex-1 container mx-auto px-4 py-8 max-w-md">
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 text-center">
+            <p className="text-red-600 dark:text-red-400 font-medium">
+              Error al cargar la ruta
+            </p>
+            <p className="text-red-500 dark:text-red-300 text-sm mt-1">
+              {error.message}
+            </p>
+          </div>
         </main>
         <Footer />
       </div>

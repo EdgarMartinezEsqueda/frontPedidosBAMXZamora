@@ -1,19 +1,18 @@
 import { useMutation } from "@tanstack/react-query";
-import { useNavigate } from "react-router";
-import toast from "react-hot-toast";
-import api from "lib/axios";
-
-import Navbar from "components/navbar/Navbar";
 import Footer from "components/footer/Footer";
 import NewRoute from "components/forms/RouteForm";
+import Navbar from "components/navbar/Navbar";
+import api from "lib/axios";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router";
 
 const NuevaRuta = () => {
   const navigate = useNavigate();
 
   // Mutación para crear la ruta
   const { mutate, isPending } = useMutation({
-    mutationFn: async (nombreRuta) => {
-      const { data } = await api.post("/rutas", { nombre: nombreRuta });
+    mutationFn: async (routeData) => {
+      const { data } = await api.post("/rutas", routeData);
       return data;
     },
     onSuccess: () => {
@@ -33,7 +32,7 @@ const NuevaRuta = () => {
         <h2 className="text-2xl font-bold text-verdeLogo mb-6 text-center">
           Crear Nueva Ruta
         </h2>
-        <NewRoute 
+        <NewRoute
           onSubmit={mutate}
           isSubmitting={isPending}
         />
