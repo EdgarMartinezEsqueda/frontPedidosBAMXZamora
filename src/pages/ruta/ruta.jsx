@@ -1,11 +1,11 @@
-import { useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
-import toast from "react-hot-toast";
 import { useAuth } from "context/AuthContext";
 import api from "lib/axios";
+import toast from "react-hot-toast";
+import { useParams } from "react-router";
 
-import Navbar from "components/navbar/Navbar";
 import Footer from "components/footer/Footer";
+import Navbar from "components/navbar/Navbar";
 import TableRoute from "components/tables/routes/TableRoute";
 
 const Route = () => {
@@ -43,20 +43,32 @@ const Route = () => {
     }
   return (
     <div className="min-h-screen flex flex-col">
-    <Navbar />
-    <main className="flex-1">
-      <h2 className="text-2xl font-bold text-verdeLogo mb-6 text-center m-3">
-        {ruta.nombre}
-      </h2>
-      {comunidadesRuta && comunidadesRuta.length > 0 ? (
-        <div className="container px-4 mx-auto md:py-4">
-          <TableRoute data={comunidadesRuta} />
+      <Navbar />
+      <main className="flex-1">
+        <h2 className="text-3xl font-bold text-center text-verdeLogo m-2">
+          {ruta.nombre}
+        </h2>
+
+        <div className="flex justify-center mb-3">
+          <span
+            className={`px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide
+              ${ruta.tipo === "voluntariado"
+                ? "bg-yellow-100 text-yellow-700 border border-yellow-300"
+                : "bg-blue-100 text-blue-700 border border-blue-300"
+              }`}
+          >
+            {ruta.tipo === "voluntariado" ? "Ruta de Voluntariado" : "Ruta Normal"}
+          </span>
         </div>
-      ) : (
-        <p className="text-center dark:text-black">No hay comunidades en esta ruta.</p>
-      )}
-    </main>
-    <Footer />
+        {comunidadesRuta && comunidadesRuta.length > 0 ? (
+          <div className="container px-4 mx-auto md:py-4">
+            <TableRoute data={comunidadesRuta} />
+          </div>
+        ) : (
+          <p className="text-center dark:text-black">No hay comunidades en esta ruta.</p>
+        )}
+      </main>
+      <Footer />
     </div>
   );
 };
