@@ -7,7 +7,7 @@ const DetalleDevolucionesModal = ({ devoluciones, onClose }) => {
   const total = tieneDesglose 
     ? Object.values(devoluciones.desglose).reduce((a, b) => a + b, 0)
     : devoluciones.total;
-console.log(devoluciones, tieneDesglose, total);
+
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full">

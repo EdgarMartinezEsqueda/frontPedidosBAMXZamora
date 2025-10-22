@@ -4,7 +4,7 @@ import { useState } from "react";
 
 const RouteMetricsTable = ({ data }) => {
   const [devolucionSeleccionada, setDevolucionSeleccionada] = useState(null);
-console.log({data});
+
   return (
     <>
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-900/50 overflow-x-auto">
