@@ -1,11 +1,11 @@
-import React, { useMemo } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMemo } from "react";
 import toast from "react-hot-toast";
 
-import api from "lib/axios";
 import ActionButtons from "components/buttons/ActionButtons";
-import { RESOURCES } from "utils/permisos";
 import { useAuth } from "context/AuthContext";
+import api from "lib/axios";
+import { RESOURCES } from "utils/permisos";
 
 const TableComponent = ({  currentPage, pageSize, filters, setTotalOrders }) => {
   const queryClient = useQueryClient();
@@ -106,7 +106,7 @@ const TableComponent = ({  currentPage, pageSize, filters, setTotalOrders }) => 
                   <td data-th="Fecha" className="block lg:table-cell px-4 py-4 text-sm whitespace-nowrap lg:!bg-inherit bg-gray-50 dark:bg-gray-800 text-center" >
                     <div className="flex justify-between items-center lg:block gap-2">
                       <span className="text-gray-400 lg:hidden">Fecha</span>
-                      <span className="dark:text-white">{item.fechaEntrega}</span>
+                      <span className="dark:text-white">{new Date(item.fechaEntrega).toLocaleDateString("es-MX").replaceAll("/", "-")}</span>
                     </div>
                   </td>
 

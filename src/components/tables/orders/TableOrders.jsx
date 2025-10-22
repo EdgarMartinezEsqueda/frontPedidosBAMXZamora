@@ -120,7 +120,7 @@ const TableComponent = ({ currentPage, pageSize, filters, setTotalOrders }) => {
                   <td 
                     data-th="Fecha"
                     className="block lg:table-cell px-4 py-4 text-sm text-center">
-                    {item.fechaEntrega}
+                    {new Date(item.fechaEntrega).toLocaleDateString("es-MX").replaceAll("/", "-")}
                   </td>
 
                   {/* Estatus */}
