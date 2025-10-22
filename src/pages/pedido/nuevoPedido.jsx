@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
 
@@ -14,7 +14,7 @@ import TableOrder from "components/tables/orders/TableOrder";
 
 const getTomorrowDate = () => {
   const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);  // Suma 1 día
+  tomorrow.setDate(tomorrow.getDate() + 1);
   
   const year = tomorrow.getFullYear();
   const month = String(tomorrow.getMonth() + 1).padStart(2, "0");
@@ -52,6 +52,13 @@ const NewOrder = () => {
     onError: () => toast.error("Error cargando rutas")
   });
 
+  // Determinar si la ruta seleccionada es de voluntariado
+  const rutaSeleccionada = useMemo(() => {
+    return rutas.find(r => r.id === selectedRutaId);
+  }, [rutas, selectedRutaId]);
+
+  const esRutaVoluntariado = rutaSeleccionada?.tipo === 'voluntariado';
+
   // Mutación para crear el pedido
   const { mutate, isPending } = useMutation({
     mutationFn: async (newOrder) => {
@@ -75,16 +82,29 @@ const NewOrder = () => {
       return;
     }
 
-    const comunidadesData = newPedido.pedidoComunidad.map(pedido => ({
-      idComunidad: pedido.idComunidad,
-      despensasCosto: pedido.despensasCosto || 0,
-      despensasMedioCosto: pedido.despensasMedioCosto || 0,
-      despensasSinCosto: pedido.despensasSinCosto || 0,
-      despensasApadrinadas: pedido.despensasApadrinadas || 0,
-      arpilladas: pedido.arpilladas || false,
-      observaciones: pedido.observaciones || "",
-      comite: pedido.comite || 0,
-    }));
+    // Estructura según tipo de ruta
+    const comunidadesData = newPedido.pedidoComunidad.map((pedido) => {
+      const baseData = {
+        idComunidad: pedido.idComunidad,
+        arpilladas: pedido.arpilladas || false,
+        observaciones: pedido.observaciones || "",
+        comite: pedido.comite || 0,
+      };
+
+      const rutaData = esRutaVoluntariado
+        ? { despensasVoluntariado: pedido.despensasVoluntariado || 0 }
+        : {
+            despensasCosto: pedido.despensasCosto || 0,
+            despensasMedioCosto: pedido.despensasMedioCosto || 0,
+            despensasSinCosto: pedido.despensasSinCosto || 0,
+            despensasApadrinadas: pedido.despensasApadrinadas || 0,
+          };
+      return {
+        ...baseData,
+        ...rutaData,
+      };
+    });
+
 
     mutate({
       idTs,
@@ -94,8 +114,36 @@ const NewOrder = () => {
     });
   };
 
-  if (isLoadingComunidades || isLoadingRutas) return <div>Cargando...</div>;
-  if (errorComunidades || errorRutas) return <div>Error al cargar los datos</div>;
+  // Calcular total según tipo de ruta
+  const totalDespensas = useMemo(() => {
+    return newPedido.pedidoComunidad.reduce((total, pedido) => {
+      if (esRutaVoluntariado) {
+        return total + (pedido.despensasVoluntariado || 0);
+      } else {
+        return total + 
+          (pedido.despensasCosto || 0) + 
+          (pedido.despensasMedioCosto || 0) + 
+          (pedido.despensasSinCosto || 0) + 
+          (pedido.despensasApadrinadas || 0);
+      }
+    }, 0);
+  }, [newPedido.pedidoComunidad, esRutaVoluntariado]);
+
+  if (isLoadingComunidades || isLoadingRutas) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-verdeLogo"></div>
+      </div>
+    );
+  }
+
+  if (errorComunidades || errorRutas) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-red-500">Error al cargar los datos</div>
+      </div>
+    );
+  }
   
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-800">
@@ -111,6 +159,20 @@ const NewOrder = () => {
             placeholder="Seleccione la ruta"
           />
         </h2>
+
+        {/* Indicador de tipo de ruta */}
+        {selectedRutaId && rutaSeleccionada && (
+          <div className="text-center mt-2">
+            <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+              esRutaVoluntariado 
+                ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
+                : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+            }`}>
+              {esRutaVoluntariado ? '🤝 Ruta de Voluntariado' : '📦 Ruta Normal'}
+            </span>
+          </div>
+        )}
+
         {selectedRutaId && (
           <>
             <div className="flex justify-center items-center my-4">
@@ -128,29 +190,36 @@ const NewOrder = () => {
                 required
               />
             </div>
+
             <TableOrder 
               mode="create"
               data={newPedido}
               comunidades={comunidadesList}
               onDataChange={setNewPedido}
               selectedRutaId={selectedRutaId}
+              esRutaVoluntariado={esRutaVoluntariado}
             />
+
             <div className="flex justify-center items-center flex-col max-w-md m-auto">
               <h2 className="block font-bold text-2xl text-rojoLogo dark:text-red-400">
                 Total despensas
               </h2>
               <h3 className="relative flex items-center text-amarilloLogo dark:text-yellow-400 text-xl font-bold">
-                {newPedido.pedidoComunidad.reduce((total, pedido) => {
-                  return total + 
-                  (pedido.despensasCosto || 0) + 
-                  (pedido.despensasMedioCosto || 0) + 
-                  (pedido.despensasSinCosto || 0) + 
-                  (pedido.despensasApadrinadas || 0);
-                }, 0)}
+                {totalDespensas}
               </h3>
+              {esRutaVoluntariado && (
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                  (Despensas de voluntariado - sin costo)
+                </p>
+              )}
             </div>
+
             <div className="flex justify-center py-4">
-              <AcceptButton disabled={false} onClick={handleSubmit}/>
+              <AcceptButton 
+                disabled={isPending} 
+                onClick={handleSubmit}
+                label={isPending ? "Creando..." : "Crear Pedido"}
+              />
             </div>
           </>
         )}

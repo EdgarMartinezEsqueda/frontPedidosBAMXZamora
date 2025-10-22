@@ -1,40 +1,39 @@
-import React, { useEffect } from "react";
-
 import ResponsiveTable from "components/tables/orders/ResponsiveTable";
+import { useEffect } from "react";
 
-const TableComponent = ({ 
-  mode = "view",
-  data = [],
-  comunidades = [], 
-  onDataChange ,
-  selectedRutaId
-}) => {
+const TableComponent = ({ mode = "view", data = [], comunidades = [],  onDataChange, selectedRutaId, esRutaVoluntariado = false }) => {
   useEffect(() => {
-    
     if (mode === "create" && comunidades.length > 0 && selectedRutaId) {
       // Filtrar comunidades por la ruta seleccionada
       const comunidadesFiltradas = comunidades.filter(
         (comunidad) => comunidad.idRuta === selectedRutaId
       );
+
       const initialData = {
-        pedidoComunidad: comunidadesFiltradas.map((comunidad) => ({ // ✅ Agrega pedidoComunidad
-          idComunidad: comunidad.id,
-          comunidad: comunidad, // Guarda el objeto completo si es necesario
-          encargada: comunidad.jefa,
-          contacto: comunidad.contacto,
-          despensasCosto: 0,
-          despensasMedioCosto: 0,
-          despensasSinCosto: 0,
-          despensasApadrinadas: 0,
-          arpilladas: false,
-          observaciones: "",
-          comite: 0,
-        }))
-      }
+        pedidoComunidad: comunidadesFiltradas.map((comunidad) => {
+          const baseData = {
+            idComunidad: comunidad.id,
+            comunidad: comunidad,
+            encargada: comunidad.jefa,
+            contacto: comunidad.contacto,
+            arpilladas: false,
+            observaciones: "",
+            comite: 0,
+            despensasCosto: 0,
+            despensasMedioCosto: 0,
+            despensasSinCosto: 0,
+            despensasApadrinadas: 0,
+          };
+
+          return esRutaVoluntariado
+            ? { ...baseData, despensasVoluntariado: 0 }
+            : baseData;
+        }),
+      };
       
       onDataChange(initialData);
     }
-  }, [mode, comunidades, selectedRutaId, onDataChange]);
+  }, [mode, comunidades, selectedRutaId, onDataChange, esRutaVoluntariado]);
 
   const handleChange = (index, field, value) => {
     const updatedComunidad = data.pedidoComunidad.map((item, i) =>
@@ -49,11 +48,11 @@ const TableComponent = ({
 
   return (
     <section className="container px-4 mx-auto md:py-4">
-      {/* Tabla de escritorio */}
       <ResponsiveTable 
         mode={mode} 
         data={data} 
         handleChange={handleChange}
+        esRutaVoluntariado={esRutaVoluntariado}
       />
     </section>
   );

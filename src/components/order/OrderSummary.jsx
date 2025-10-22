@@ -1,11 +1,11 @@
 const OrderSummary = ({ pedidoData }) => {
   const calcularTotalDespensas = () => {
+  const campos = pedidoData.esRutaVoluntariado
+    ? ["despensasVoluntariado"]
+    : ["despensasCosto", "despensasMedioCosto", "despensasSinCosto", "despensasApadrinadas"];
+
     return pedidoData.pedidoComunidad.reduce((total, pedido) => {
-      return total + 
-        (pedido.despensasCosto || 0) + 
-        (pedido.despensasMedioCosto || 0) + 
-        (pedido.despensasSinCosto || 0) + 
-        (pedido.despensasApadrinadas || 0);
+      return total + campos.reduce((sum, campo) => sum + (pedido[campo] || 0), 0);
     }, 0);
   };
 

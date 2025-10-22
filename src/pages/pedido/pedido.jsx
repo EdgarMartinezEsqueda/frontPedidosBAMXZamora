@@ -7,6 +7,7 @@ import { useParams } from "react-router";
 import { hasPermission, RESOURCES } from "utils/permisos";
 
 import GroupButtons from "components/buttons/ButtonsForOrderPage";
+import ReturnToEditButton from "components/buttons/ReturnToEditButton";
 import Footer from "components/footer/Footer";
 import Navbar from "components/navbar/Navbar";
 import CollectionSection from "components/order/CollectionSection";
@@ -18,8 +19,7 @@ import TableOrder from "components/tables/orders/TableOrder";
 import { generateCobranzaPDF } from "utils/pdfGenerator";
 
 const OrderPage = () => {
-  const { id }
-   = useParams();
+  const { id } = useParams();
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const tableRef = useRef(null);
@@ -28,11 +28,13 @@ const OrderPage = () => {
     queryKey: ["pedido", id],
     queryFn: async () => {
       const { data } = await api.get(`/pedidos/${id}`);
-      console.log("Datos del pedido:", data);
       return data;
     },
     retry: false,
   });
+
+  // Determinar si es ruta de voluntariado
+  const esRutaVoluntariado = pedidoData?.esRutaVoluntariado || pedidoData?.ruta?.tipo === "voluntariado";
 
   // Mutation para generar cobranza
   const generarCobranzaMutation = useMutation({
@@ -135,14 +137,21 @@ const OrderPage = () => {
 
   const puedeActualizarPedido = hasPermission(user.data, RESOURCES.PEDIDOS, "update", pedidoData.idTs);
   const pedidoFinalizado = pedidoData.estado === "finalizado";
+  const puedeRevertir = hasPermission(user.data, RESOURCES.PEDIDOS, "revert", pedidoData.idTs);
 
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <main className="flex-1">
         <div ref={tableRef}>
-          <OrderHeader pedidoData={pedidoData} id={id} />
-          <TableOrder mode="view" data={pedidoData} />
+          <OrderHeader pedidoData={pedidoData} id={id} />         
+
+          <TableOrder 
+            mode="view" 
+            data={pedidoData} 
+            esRutaVoluntariado={esRutaVoluntariado} // 🆕
+          />
+
           <OrderSummary pedidoData={pedidoData} />
         </div>
 
@@ -154,20 +163,45 @@ const OrderPage = () => {
           </div>
         )}
 
-        {pedidoFinalizado && <OrderFinalDetails pedidoData={pedidoData} user={user} id={id} />}
+        {/* Solo mostrar CollectionSection si NO es ruta de voluntariado */}
+        {pedidoFinalizado && !esRutaVoluntariado && (
+          <>
+            <OrderFinalDetails pedidoData={pedidoData} user={user} id={id} />
 
-        {pedidoFinalizado && (
-          <CollectionSection
-            pedidoData={pedidoData}
-            user={user}
-            onGenerar={handleGenerarCobranza}
-            onRegenerar={handleRegenerarCobranza}
-            onDescargar={handleDescargarCobranza}
-            isGenerating={generarCobranzaMutation.isPending}
-            isRegenerating={regenerarCobranzaMutation.isPending}
-            isDownloading={descargarCobranzaMutation.isPending}
-          />
+            <CollectionSection
+              pedidoData={pedidoData}
+              user={user}
+              onGenerar={handleGenerarCobranza}
+              onRegenerar={handleRegenerarCobranza}
+              onDescargar={handleDescargarCobranza}
+              isGenerating={generarCobranzaMutation.isPending}
+              isRegenerating={regenerarCobranzaMutation.isPending}
+              isDownloading={descargarCobranzaMutation.isPending}
+              />
+          </>
         )}
+
+        {/* Mensaje informativo para rutas de voluntariado */}
+        {pedidoFinalizado && esRutaVoluntariado && (
+          <div className="max-w-2xl mx-auto my-6 p-4">
+            <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-4 text-center">
+              <div className="flex items-center justify-center mb-2">
+                <svg className="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <p className="text-purple-800 dark:text-purple-200 font-medium">
+                Ruta de Voluntariado
+              </p>
+              <p className="text-sm text-purple-600 dark:text-purple-300 mt-1">
+                Las rutas de voluntariado no generan cobranza ni requieren registro de efectivo.
+              </p>
+            </div>
+          </div>
+        )}
+        
+        {/* Botón revertir */}
+        {pedidoFinalizado && puedeRevertir && <ReturnToEditButton id={id} />}
       </main>
       <Footer />
     </div>

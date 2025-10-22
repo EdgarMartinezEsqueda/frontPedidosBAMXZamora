@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useAuth } from "context/AuthContext";
 import api from "lib/axios";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router";
 import { hasPermission, RESOURCES } from "utils/permisos";
@@ -18,15 +18,18 @@ const EditOrder = () => {
   const { user } = useAuth();
   const [showEfectivoModal, setShowEfectivoModal] = useState(false);
 
-  //Fetch para obtener los datos del pedido
+  // Fetch para obtener los datos del pedido
   const { data: pedido, isLoading: isLoadingPedido, isError: isErrorPedido, error: errorPedido } = useQuery({
-    queryKey: ["pedido"],
+    queryKey: ["pedido", id],
     queryFn: async () => {
       const response = await api.get(`/pedidos/${id}`);
       return response.data;
     },
     retry: false,
   });
+
+  // Determinar si es ruta de voluntariado
+  const esRutaVoluntariado = pedido?.esRutaVoluntariado || pedido?.ruta?.tipo === 'voluntariado';
 
   // Estado editable
   const [editableData, setEditableData] = useState({
@@ -64,6 +67,7 @@ const EditOrder = () => {
           despensasMedioCosto: comunidad.despensasMedioCosto ?? 0,
           despensasSinCosto: comunidad.despensasSinCosto ?? 0,
           despensasApadrinadas: comunidad.despensasApadrinadas ?? 0,
+          despensasVoluntariado: comunidad.despensasVoluntariado ?? 0, //
           observaciones: comunidad.observaciones ?? ""
         })),
       });
@@ -97,7 +101,6 @@ const EditOrder = () => {
       devolucionesApadrinadas: data.devolucionesApadrinadas,
       horaLlegada: data.horaLlegada,
       estado: "finalizado",
-      // Nueva estructura con efectivo y transferencias
       efectivo: data.efectivo,
       transferencias: data.transferencias,
       totales: data.totales
@@ -133,10 +136,44 @@ const EditOrder = () => {
     }
   }, [pedido, user.data, navigate, id]);
 
+  // Calcular total según tipo de ruta
+  const totalDespensas = useMemo(() => {
+    return editableData.pedidoComunidad.reduce((total, pedido) => {
+      if (esRutaVoluntariado) {
+        return total + (pedido.despensasVoluntariado || 0);
+      } else {
+        return total + 
+          (pedido.despensasCosto || 0) + 
+          (pedido.despensasMedioCosto || 0) + 
+          (pedido.despensasSinCosto || 0) + 
+          (pedido.despensasApadrinadas || 0);
+      }
+    }, 0);
+  }, [editableData.pedidoComunidad, esRutaVoluntariado]);
+
   // Handlers
   const handleSave = () => updateMutation.mutate(editableData);
 
   const handleFinalize = () => {
+    // Para rutas de voluntariado, no validar efectivo
+    if (esRutaVoluntariado) {
+      if (!editableData.horaLlegada) {
+        toast.error("Debe ingresar la hora de llegada");
+        return;
+      }
+
+      // Finalizar sin modal de efectivo
+      finalizeMutation.mutate({
+        ...editableData,
+        devoluciones: 0,
+        efectivo: null,
+        transferencias: [],
+        totales: { totalGeneral: 0 }
+      });
+      return;
+    }
+
+    // Validación para rutas normales
     editableData.devoluciones = 
       editableData.devolucionesCosto + 
       editableData.devolucionesMedioCosto + 
@@ -179,9 +216,8 @@ const EditOrder = () => {
     setShowEfectivoModal(true);
   };
 
-  // Nuevo handler para finalizar CON efectivo y transferencias
+  // Handler para finalizar CON efectivo y transferencias
   const handleFinalizeWithEfectivo = (data) => {
-    // data contiene: { efectivo, transferencias, totales }
     finalizeMutation.mutate({
       ...editableData,
       efectivo: data.efectivo,
@@ -200,8 +236,21 @@ const EditOrder = () => {
   const isProcessing = updateMutation.isPending || finalizeMutation.isPending || deleteMutation.isPending;
   const disabled = isLoadingPedido || isProcessing;
 
-  if (isLoadingPedido) return <div>Cargando...</div>;
-  if (isErrorPedido) return <div>Error: {errorPedido.message}</div>;
+  if (isLoadingPedido) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-verdeLogo"></div>
+      </div>
+    );
+  }
+
+  if (isErrorPedido) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-red-500">Error: {errorPedido.message}</div>
+      </div>
+    );
+  }
   
   return (
     <div className="min-h-screen flex flex-col">
@@ -219,7 +268,7 @@ const EditOrder = () => {
               type="date"
               value={editableData.fechaEntrega}
               onChange={(e) => setEditableData({ ...editableData, fechaEntrega: e.target.value })}
-              className="p-2 border rounded"
+              className="p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
               disabled={disabled}
             />
           </div>
@@ -228,123 +277,125 @@ const EditOrder = () => {
         <TableOrder
           mode="edit"
           data={editableData}
-          onDataChange={(newComunidades) =>
-            setEditableData({ ...newComunidades })
-          }
+          onDataChange={(newComunidades) => setEditableData({ ...newComunidades })}
+          esRutaVoluntariado={esRutaVoluntariado} //
         />
 
         <div className="flex justify-center items-center flex-col max-w-md m-auto">
-          <h2 className="block font-bold text-2xl text-rojoLogo">Total despensas</h2>
-          <h3 className="relative flex items-center text-amarilloLogo text-xl font-bold">
-            {editableData.pedidoComunidad.reduce((total, pedido) => {
-              return total + 
-                (pedido.despensasCosto || 0) + 
-                (pedido.despensasMedioCosto || 0) + 
-                (pedido.despensasSinCosto || 0) + 
-                (pedido.despensasApadrinadas || 0);
-            }, 0)}
+          <h2 className="block font-bold text-2xl text-rojoLogo dark:text-red-400">
+            Total despensas
+          </h2>
+          <h3 className="relative flex items-center text-amarilloLogo dark:text-yellow-400 text-xl font-bold">
+            {totalDespensas}
           </h3>
+          {esRutaVoluntariado && (
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+              (Despensas de voluntariado - sin costo)
+            </p>
+          )}
         </div>
 
         {/* Despensas regresadas, hora de llegada y estado */}
-        <div className="max-w-md mx-auto my-2 space-y-4">
-          <div className="flex flex-col gap-2">
-            <label className="text-verdeLogo font-bold">Hora de llegada</label>
-            <input
-              type="time"
-              value={editableData.horaLlegada || ""}
-              onChange={(e) => setEditableData({ ...editableData, horaLlegada: e.target.value })}
-              className="p-2 border rounded"
-              disabled={disabled || editableData.estado === "finalizado"}
-              required
-            />
-          </div>
-
-          {/* Solo aparecerá el apartado de despensas si se pone la hora de llegada, para confirmar que se va a finalizar el pedido */}
-          {editableData.horaLlegada && (
-            <div className="flex flex-col gap-2">
-              <label className="text-rojoLogo font-bold">Despensas regresadas</label>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex flex-col gap-2">
-                  <label className="text-blue-600 dark:text-blue-400 font-semibold text-sm">
-                    Con costo
-                  </label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={editableData.devolucionesCosto}
-                    onChange={(e) => setEditableData({ 
-                      ...editableData, 
-                      devolucionesCosto: Math.max(0, e.target.valueAsNumber || 0) 
-                    })}
-                    className="p-2 border rounded text-sm"
-                    disabled={disabled || editableData.estado === "finalizado"}
+        <div className="max-w-md mx-auto my-2 space-y-4 p-4">
+            {/* Solo mostrar devoluciones si NO es ruta de voluntariado */}
+            {editableData.horaLlegada && !esRutaVoluntariado && (
+            <>
+              <div className="flex flex-col gap-2">
+                <label className="text-verdeLogo dark:text-green-400 font-bold">Hora de llegada</label>
+                <input
+                  type="time"
+                  value={editableData.horaLlegada || ""}
+                  onChange={(e) => setEditableData({ ...editableData, horaLlegada: e.target.value })}
+                  className="p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                  disabled={disabled || editableData.estado === "finalizado"}
+                  required
                   />
-                </div>
-
-                <div className="flex flex-col gap-2">
-                  <label className="text-green-600 dark:text-green-400 font-semibold text-sm">
-                    Medio costo
-                  </label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={editableData.devolucionesMedioCosto}
-                    onChange={(e) => setEditableData({ 
-                      ...editableData, 
-                      devolucionesMedioCosto: Math.max(0, e.target.valueAsNumber || 0) 
-                    })}
-                    className="p-2 border rounded text-sm"
-                    disabled={disabled || editableData.estado === "finalizado"}
-                  />
-                </div>
-
-                <div className="flex flex-col gap-2">
-                  <label className="text-yellow-600 dark:text-yellow-400 font-semibold text-sm">
-                    Sin costo
-                  </label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={editableData.devolucionesSinCosto}
-                    onChange={(e) => setEditableData({ 
-                      ...editableData, 
-                      devolucionesSinCosto: Math.max(0, e.target.valueAsNumber || 0) 
-                    })}
-                    className="p-2 border rounded text-sm"
-                    disabled={disabled || editableData.estado === "finalizado"}
-                  />
-                </div>
-
-                <div className="flex flex-col gap-2">
-                  <label className="text-purple-600 dark:text-purple-400 font-semibold text-sm">
-                    Apadrinadas
-                  </label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={editableData.devolucionesApadrinadas}
-                    onChange={(e) => setEditableData({ 
-                      ...editableData, 
-                      devolucionesApadrinadas: Math.max(0, e.target.valueAsNumber || 0) 
-                    })}
-                    className="p-2 border rounded text-sm"
-                    disabled={disabled || editableData.estado === "finalizado"}
-                  />
-                </div>
               </div>
 
-              {/* Total de devoluciones */}
-              <div className="mt-2 p-3 bg-red-50 dark:bg-red-900/20 rounded-lg text-center">
-                <span className="text-sm text-gray-600 dark:text-gray-400">Total devoluciones:</span>
-                <span className="ml-2 text-xl font-bold text-red-600 dark:text-red-400">
-                  {editableData.devolucionesCosto + 
-                  editableData.devolucionesMedioCosto + 
-                  editableData.devolucionesSinCosto + 
-                  editableData.devolucionesApadrinadas}
-                </span>
+              <div className="flex flex-col gap-2">
+                <label className="text-rojoLogo dark:text-red-400 font-bold">Despensas regresadas</label>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex flex-col gap-2">
+                    <label className="text-blue-600 dark:text-blue-400 font-semibold text-sm">
+                      Con costo
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      value={editableData.devolucionesCosto}
+                      onChange={(e) => setEditableData({ 
+                        ...editableData, 
+                        devolucionesCosto: Math.max(0, e.target.valueAsNumber || 0) 
+                      })}
+                      className="p-2 border rounded text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      disabled={disabled || editableData.estado === "finalizado"}
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <label className="text-green-600 dark:text-green-400 font-semibold text-sm">
+                      Medio costo
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      value={editableData.devolucionesMedioCosto}
+                      onChange={(e) => setEditableData({ 
+                        ...editableData, 
+                        devolucionesMedioCosto: Math.max(0, e.target.valueAsNumber || 0) 
+                      })}
+                      className="p-2 border rounded text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      disabled={disabled || editableData.estado === "finalizado"}
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <label className="text-yellow-600 dark:text-yellow-400 font-semibold text-sm">
+                      Sin costo
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      value={editableData.devolucionesSinCosto}
+                      onChange={(e) => setEditableData({ 
+                        ...editableData, 
+                        devolucionesSinCosto: Math.max(0, e.target.valueAsNumber || 0) 
+                      })}
+                      className="p-2 border rounded text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      disabled={disabled || editableData.estado === "finalizado"}
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <label className="text-purple-600 dark:text-purple-400 font-semibold text-sm">
+                      Apadrinadas
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      value={editableData.devolucionesApadrinadas}
+                      onChange={(e) => setEditableData({ 
+                        ...editableData, 
+                        devolucionesApadrinadas: Math.max(0, e.target.valueAsNumber || 0) 
+                      })}
+                      className="p-2 border rounded text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      disabled={disabled || editableData.estado === "finalizado"}
+                    />
+                  </div>
+                </div>
+
+                {/* Total de devoluciones */}
+                <div className="mt-2 p-3 bg-red-50 dark:bg-red-900/20 rounded-lg text-center">
+                  <span className="text-sm text-gray-600 dark:text-gray-400">Total devoluciones:</span>
+                  <span className="ml-2 text-xl font-bold text-red-600 dark:text-red-400">
+                    {editableData.devolucionesCosto + 
+                    editableData.devolucionesMedioCosto + 
+                    editableData.devolucionesSinCosto + 
+                    editableData.devolucionesApadrinadas}
+                  </span>
+                </div>
               </div>
-            </div>
+            </>
           )}
         
           {hasPermission(user.data, RESOURCES.PEDIDOS, "update", pedido.idTs) && (
@@ -358,19 +409,21 @@ const EditOrder = () => {
             </div>
           )}
 
-          {/* Modal de Efectivo y Transferencias */}
-          <EfectivoModal
-            show={showEfectivoModal}
-            onClose={() => setShowEfectivoModal(false)}
-            onConfirm={handleFinalizeWithEfectivo}
-            isLoading={finalizeMutation.isPending}
-            expectedTotal={editableData.pedidoComunidad.reduce((total, com) => {
-              const costo = Number(com.comunidad.costoPaquete || 0);
-              return total + 
-                (com.despensasCosto || 0) * costo +
-                (com.despensasMedioCosto || 0) * (costo / 2); // solo contamos costo y medio costo
-            }, 0)}
-          />
+          {/* Modal de Efectivo y Transferencias - Solo para rutas normales */}
+          {!esRutaVoluntariado && (
+            <EfectivoModal
+              show={showEfectivoModal}
+              onClose={() => setShowEfectivoModal(false)}
+              onConfirm={handleFinalizeWithEfectivo}
+              isLoading={finalizeMutation.isPending}
+              expectedTotal={editableData.pedidoComunidad.reduce((total, com) => {
+                const costo = Number(com.comunidad.costoPaquete || 0);
+                return total + 
+                  (com.despensasCosto || 0) * costo +
+                  (com.despensasMedioCosto || 0) * (costo / 2);
+              }, 0)}
+            />
+          )}
         </div>
       </main>
       <Footer />
