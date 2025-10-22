@@ -157,11 +157,7 @@ const EditOrder = () => {
   const handleFinalize = () => {
     // Para rutas de voluntariado, no validar efectivo
     if (esRutaVoluntariado) {
-      if (!editableData.horaLlegada) {
-        toast.error("Debe ingresar la hora de llegada");
-        return;
-      }
-
+      editableData.horaLlegada = new Date().toTimeString().slice(0,5);
       // Finalizar sin modal de efectivo
       finalizeMutation.mutate({
         ...editableData,
@@ -298,7 +294,7 @@ const EditOrder = () => {
         {/* Despensas regresadas, hora de llegada y estado */}
         <div className="max-w-md mx-auto my-2 space-y-4 p-4">
             {/* Solo mostrar devoluciones si NO es ruta de voluntariado */}
-            {editableData.horaLlegada && !esRutaVoluntariado && (
+            {!esRutaVoluntariado && (
             <>
               <div className="flex flex-col gap-2">
                 <label className="text-verdeLogo dark:text-green-400 font-bold">Hora de llegada</label>
@@ -311,90 +307,91 @@ const EditOrder = () => {
                   required
                   />
               </div>
+              {editableData.horaLlegada && (
+                <div className="flex flex-col gap-2">
+                  <label className="text-rojoLogo dark:text-red-400 font-bold">Despensas regresadas</label>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="flex flex-col gap-2">
+                      <label className="text-blue-600 dark:text-blue-400 font-semibold text-sm">
+                        Con costo
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        value={editableData.devolucionesCosto}
+                        onChange={(e) => setEditableData({ 
+                          ...editableData, 
+                          devolucionesCosto: Math.max(0, e.target.valueAsNumber || 0) 
+                        })}
+                        className="p-2 border rounded text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        disabled={disabled || editableData.estado === "finalizado"}
+                      />
+                    </div>
 
-              <div className="flex flex-col gap-2">
-                <label className="text-rojoLogo dark:text-red-400 font-bold">Despensas regresadas</label>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="flex flex-col gap-2">
-                    <label className="text-blue-600 dark:text-blue-400 font-semibold text-sm">
-                      Con costo
-                    </label>
-                    <input
-                      type="number"
-                      min="0"
-                      value={editableData.devolucionesCosto}
-                      onChange={(e) => setEditableData({ 
-                        ...editableData, 
-                        devolucionesCosto: Math.max(0, e.target.valueAsNumber || 0) 
-                      })}
-                      className="p-2 border rounded text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                      disabled={disabled || editableData.estado === "finalizado"}
-                    />
+                    <div className="flex flex-col gap-2">
+                      <label className="text-green-600 dark:text-green-400 font-semibold text-sm">
+                        Medio costo
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        value={editableData.devolucionesMedioCosto}
+                        onChange={(e) => setEditableData({ 
+                          ...editableData, 
+                          devolucionesMedioCosto: Math.max(0, e.target.valueAsNumber || 0) 
+                        })}
+                        className="p-2 border rounded text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        disabled={disabled || editableData.estado === "finalizado"}
+                      />
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      <label className="text-yellow-600 dark:text-yellow-400 font-semibold text-sm">
+                        Sin costo
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        value={editableData.devolucionesSinCosto}
+                        onChange={(e) => setEditableData({ 
+                          ...editableData, 
+                          devolucionesSinCosto: Math.max(0, e.target.valueAsNumber || 0) 
+                        })}
+                        className="p-2 border rounded text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        disabled={disabled || editableData.estado === "finalizado"}
+                      />
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      <label className="text-purple-600 dark:text-purple-400 font-semibold text-sm">
+                        Apadrinadas
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        value={editableData.devolucionesApadrinadas}
+                        onChange={(e) => setEditableData({ 
+                          ...editableData, 
+                          devolucionesApadrinadas: Math.max(0, e.target.valueAsNumber || 0) 
+                        })}
+                        className="p-2 border rounded text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        disabled={disabled || editableData.estado === "finalizado"}
+                      />
+                    </div>
                   </div>
 
-                  <div className="flex flex-col gap-2">
-                    <label className="text-green-600 dark:text-green-400 font-semibold text-sm">
-                      Medio costo
-                    </label>
-                    <input
-                      type="number"
-                      min="0"
-                      value={editableData.devolucionesMedioCosto}
-                      onChange={(e) => setEditableData({ 
-                        ...editableData, 
-                        devolucionesMedioCosto: Math.max(0, e.target.valueAsNumber || 0) 
-                      })}
-                      className="p-2 border rounded text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                      disabled={disabled || editableData.estado === "finalizado"}
-                    />
-                  </div>
-
-                  <div className="flex flex-col gap-2">
-                    <label className="text-yellow-600 dark:text-yellow-400 font-semibold text-sm">
-                      Sin costo
-                    </label>
-                    <input
-                      type="number"
-                      min="0"
-                      value={editableData.devolucionesSinCosto}
-                      onChange={(e) => setEditableData({ 
-                        ...editableData, 
-                        devolucionesSinCosto: Math.max(0, e.target.valueAsNumber || 0) 
-                      })}
-                      className="p-2 border rounded text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                      disabled={disabled || editableData.estado === "finalizado"}
-                    />
-                  </div>
-
-                  <div className="flex flex-col gap-2">
-                    <label className="text-purple-600 dark:text-purple-400 font-semibold text-sm">
-                      Apadrinadas
-                    </label>
-                    <input
-                      type="number"
-                      min="0"
-                      value={editableData.devolucionesApadrinadas}
-                      onChange={(e) => setEditableData({ 
-                        ...editableData, 
-                        devolucionesApadrinadas: Math.max(0, e.target.valueAsNumber || 0) 
-                      })}
-                      className="p-2 border rounded text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                      disabled={disabled || editableData.estado === "finalizado"}
-                    />
+                  {/* Total de devoluciones */}
+                  <div className="mt-2 p-3 bg-red-50 dark:bg-red-900/20 rounded-lg text-center">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">Total devoluciones:</span>
+                    <span className="ml-2 text-xl font-bold text-red-600 dark:text-red-400">
+                      {editableData.devolucionesCosto + 
+                      editableData.devolucionesMedioCosto + 
+                      editableData.devolucionesSinCosto + 
+                      editableData.devolucionesApadrinadas}
+                    </span>
                   </div>
                 </div>
-
-                {/* Total de devoluciones */}
-                <div className="mt-2 p-3 bg-red-50 dark:bg-red-900/20 rounded-lg text-center">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">Total devoluciones:</span>
-                  <span className="ml-2 text-xl font-bold text-red-600 dark:text-red-400">
-                    {editableData.devolucionesCosto + 
-                    editableData.devolucionesMedioCosto + 
-                    editableData.devolucionesSinCosto + 
-                    editableData.devolucionesApadrinadas}
-                  </span>
-                </div>
-              </div>
+              )}
             </>
           )}
         

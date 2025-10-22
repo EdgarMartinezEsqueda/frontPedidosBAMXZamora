@@ -60,18 +60,20 @@ const Report = () => {
     acc.medioCosto += curr.detalleDespensas.medioCosto;
     acc.sinCosto += curr.detalleDespensas.sinCosto;
     acc.apadrinadas += curr.detalleDespensas.apadrinadas;
+    acc.voluntariado += curr.detalleDespensas.voluntariado;
     return acc;
-  }, { costo: 0, medioCosto: 0, sinCosto: 0, apadrinadas: 0 });
+  }, { costo: 0, medioCosto: 0, sinCosto: 0, apadrinadas: 0, voluntariado: 0 });
 
   const distribucionData = [
     { name: "Costo", value: resumenTipos.costo },
     { name: "Medio Costo", value: resumenTipos.medioCosto },
     { name: "Sin Costo", value: resumenTipos.sinCosto },
-    { name: "Apadrinadas", value: resumenTipos.apadrinadas }
+    { name: "Apadrinadas", value: resumenTipos.apadrinadas },
+    { name: "Voluntariado", value: resumenTipos.voluntariado }
   ];
 
   // Preparar datos para gráficos
-  const topComunidadesChartData = topComunidadesDespensas.map(c => ({
+  const topComunidadesNormalesChartData = topComunidadesDespensas.sinVoluntariado.map(c => ({
     ruta: c.nombre,
     totalDespensas: c.totalDespensas
   }));
@@ -124,18 +126,22 @@ const Report = () => {
             />
           </div>
           {/* KPI Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <KPICard
               title="Total despensas"
               value={totalDespensas}
               format="number"
             />
             <KPICard
-              title="Promedio global"
+              title="Despensas voluntariado"
+              value={resumenTipos.voluntariado}
+            />
+            <KPICard
+              title="Promedio global (despensas/comunidad)"
               value={promedioGlobal.toFixed(1)}
             />
             <KPICard
-              title="Comunidades atendidas"
+              title="Comunidades registradas"
               value={totalComunidades}
             />
           </div>
@@ -145,7 +151,7 @@ const Report = () => {
             <ChartComponent
               type="comparative"
               title="Top Comunidades por Despensas"
-              data={topComunidadesChartData}
+              data={topComunidadesNormalesChartData}
               bars={[
                 { dataKey: "totalDespensas", name: "Despensas", color: "#3B82F6" }
               ]}

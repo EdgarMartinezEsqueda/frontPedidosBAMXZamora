@@ -152,15 +152,15 @@ const Report = () => {
               value={Object.values(resumenTipos).reduce((a, b) => a + b, 0)}
             />
             <KPICard
-              title="Promedio global"
-              value={promedios.global.toFixed(1)}
+              title="Promedio global (despensas/comunidad)"
+              value={promedios.global.sinVoluntariado.toFixed(1)}
             />
             <KPICard
               title={`Devoluciones último mes (${new Date().toLocaleString("default", { month: "long" })})`}
               value={getCurrentMonthDevoluciones(tendenciaDevoluciones.mensual)}
             />
             <KPICard
-              title="Comunidades atendidas"
+              title="Comunidades atendidas en este periodo"
               value={promedios.porComunidad.length}
             />
           </div>

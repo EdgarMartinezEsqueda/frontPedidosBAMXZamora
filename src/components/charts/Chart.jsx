@@ -184,10 +184,11 @@ const ChartComponent = ({ type, title, data, bars, name }) => {
               }}
               labelStyle={{ color: textColor }}
             />
+            <Bar dataKey="apadrinadas" fill="#3B82F6" stackId="a" />
             <Bar dataKey="costo" fill="#0DB14C" stackId="a" />
             <Bar dataKey="medioCosto" fill="#F59E0B" stackId="a" />
             <Bar dataKey="sinCosto" fill="#ED1A3B" stackId="a" />
-            <Bar dataKey="apadrinadas" fill="#3B82F6" stackId="a" />
+            <Bar dataKey="voluntariado" fill="#58595b" stackId="a" />
           </BarChart>
         ) : type === "line" ? (
           <LineChart data={data}>

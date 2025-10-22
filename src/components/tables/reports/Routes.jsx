@@ -48,10 +48,21 @@ const RouteMetricsTable = ({ data }) => {
                 </td>
                 <td className="px-6 py-2 text-sm text-gray-500 dark:text-gray-300 block md:table-cell">
                   <div className="flex justify-center flex-wrap gap-2 mt-2 md:mt-0">
-                    <span className="px-2 py-1 text-xs font-medium bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 rounded">C: {ruta.metricas.detalleDespensas.costo}</span>
-                    <span className="px-2 py-1 text-xs font-medium bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-200 rounded">MC: {ruta.metricas.detalleDespensas.medioCosto}</span>
-                    <span className="px-2 py-1 text-xs font-medium bg-yellow-100 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-200 rounded">SC: {ruta.metricas.detalleDespensas.sinCosto}</span>
-                    <span className="px-2 py-1 text-xs font-medium bg-purple-100 dark:bg-purple-900/50 text-purple-800 dark:text-purple-200 rounded">A: {ruta.metricas.detalleDespensas.apadrinadas}</span>
+                    <span className="px-2 py-1 text-xs font-medium bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 rounded">
+                      C: {ruta.metricas.detalleDespensas.costo}
+                    </span>
+                    <span className="px-2 py-1 text-xs font-medium bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-200 rounded">
+                      MC: {ruta.metricas.detalleDespensas.medioCosto}
+                    </span>
+                    <span className="px-2 py-1 text-xs font-medium bg-yellow-100 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-200 rounded">
+                      SC: {ruta.metricas.detalleDespensas.sinCosto}
+                    </span>
+                    <span className="px-2 py-1 text-xs font-medium bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-200 rounded">
+                      A: {ruta.metricas.detalleDespensas.apadrinadas}
+                    </span>
+                    <span className="px-2 py-1 text-xs font-medium bg-teal-100 dark:bg-teal-900/50 text-teal-800 dark:text-teal-200 rounded">
+                      V: {ruta.metricas.detalleDespensas.voluntariado}
+                    </span>
                   </div>
                 </td>
               </tr>
