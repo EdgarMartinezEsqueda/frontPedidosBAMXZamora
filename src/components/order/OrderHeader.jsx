@@ -26,7 +26,7 @@ const OrderHeader = ({ pedidoData, id }) => {
           <ExportSingleOrderButton pedido={pedidoData} />
         </div>
         <div className="self-center md:self-start hidden print:block">
-          <img src="https://bamxzamora.org/assets/images/zamora.webp"  className="h-10"/>
+          <img src="https://bamxzamora.org/assets/images/zamora.webp"  className="h-20"/>
         </div>
       </div>
     </div>
