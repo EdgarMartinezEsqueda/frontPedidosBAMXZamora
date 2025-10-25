@@ -39,7 +39,7 @@ const Sidebar = () => {
       
       case "Almacen":
         return allNavItems.filter(item => 
-          ["Resumen", "Comunidades", "Rutas", "Despensas"].includes(item.label)
+          ["Resumen", "Comunidades", "Rutas", "Despensas", "Complementos"].includes(item.label)
         );
       
       default:
