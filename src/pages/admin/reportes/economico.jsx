@@ -8,6 +8,7 @@ import KPICard from "components/cards/KPICard";
 import ChartComponent from "components/charts/Chart";
 import ReportFilter from "components/filter/FilterReport";
 import Footer from "components/footer/Footer";
+import LoadingScreen from "components/loading/LoadingScreen";
 import Navbar from "components/navbar/Navbar";
 import Pagination from "components/pagination/Pagination";
 import SearchInput from "components/search/Search";
@@ -42,10 +43,23 @@ const ReportEconomico = () => {
     }
   });
 
-  if (isLoading) return <div>Cargando...</div>;
+  if (isLoading) {
+    return (
+      <LoadingScreen 
+        message="Cargando reporte Económico..."
+        showSidebar={true}
+      />
+    );
+  }
+
   if (error) {
-    toast.error("Error cargando los reportes");
-    return <div>Error: {error.message}</div>;
+    toast.error("Error cargando el reporte Económico");
+    return (
+      <LoadingScreen 
+        error={error.message}
+        showSidebar={true}
+      />
+    );
   }
 
   const {

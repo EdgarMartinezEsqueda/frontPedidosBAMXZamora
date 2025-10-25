@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 
 import CalendarComponent from "components/calendar/Calendar";
 import Footer from "components/footer/Footer";
+import LoadingScreen from "components/loading/LoadingScreen";
 import Navbar from "components/navbar/Navbar";
 
 const Calendario = () => {
@@ -15,8 +16,24 @@ const Calendario = () => {
     }
   });
 
-  if (isLoading) return <div>Cargando...</div>;
-  if (error) return <div>Error: {error.message}</div> && toast.error("Error cargando los reportes");
+  if (isLoading) {
+    return (
+      <LoadingScreen 
+        message="Cargando el Calendario..."
+        showSidebar={false}
+      />
+    );
+  }
+
+  if (error) {
+    toast.error("Error cargando el Calendario");
+    return (
+      <LoadingScreen 
+        error={error.message}
+        showSidebar={false}
+      />
+    );
+  }
   
   return (
      <div className="min-h-screen flex flex-col">

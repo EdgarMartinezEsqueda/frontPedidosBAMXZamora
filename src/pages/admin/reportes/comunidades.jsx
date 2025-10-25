@@ -8,6 +8,7 @@ import KPICard from "components/cards/KPICard";
 import ChartComponent from "components/charts/Chart";
 import ReportFilter from "components/filter/FilterReport";
 import Footer from "components/footer/Footer";
+import LoadingScreen from "components/loading/LoadingScreen";
 import Navbar from "components/navbar/Navbar";
 import Pagination from "components/pagination/Pagination";
 import SearchInput from "components/search/Search";
@@ -39,8 +40,24 @@ const Report = () => {
     }
   });
 
-  if (isLoading) return <div>Cargando...</div>;
-  if (error) return <div>Error: {error.message}</div> && toast.error("Error cargando los reportes");
+  if (isLoading) {
+    return (
+      <LoadingScreen 
+        message="Cargando reporte de Comunidades..."
+        showSidebar={true}
+      />
+    );
+  }
+
+  if (error) {
+    toast.error("Error cargando el reporte de Comunidades");
+    return (
+      <LoadingScreen 
+        error={error.message}
+        showSidebar={true}
+      />
+    );
+  }
 
   const {
     topComunidadesPedidos,
@@ -167,12 +184,6 @@ const Report = () => {
           <div className="bg-white dark:bg-gray-700 p-4 rounded-lg shadow-md">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold">Top Comunidades por Pedidos</h3>
-              <button
-                onClick={() => setShowAllPedidos(!showAllPedidos)}
-                className="text-blue-600 text-sm"
-              >
-                {showAllPedidos ? "Mostrar menos" : "Ver todas"}
-              </button>
             </div>
             <TableComponent
               columns={[

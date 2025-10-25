@@ -4,6 +4,7 @@ import ChartComponent from "components/charts/Chart";
 import TopList from "components/dashboard/TopList";
 import ReportFilter from "components/filter/FilterReport";
 import Footer from "components/footer/Footer";
+import LoadingScreen from "components/loading/LoadingScreen";
 import Navbar from "components/navbar/Navbar";
 import Sidebar from "components/sidebar/Sidebar";
 import api from "lib/axios";
@@ -32,8 +33,24 @@ const Report = () => {
     }
   });
 
-  if (isLoading) return <div>Cargando...</div>;
-  if (error) return <div>Error: {error.message}</div> && toast.error("Error cargando los reportes");
+  if (isLoading) {
+    return (
+      <LoadingScreen 
+        message="Cargando reporte de Rutas..."
+        showSidebar={true}
+      />
+    );
+  }
+
+  if (error) {
+    toast.error("Error cargando el reporte de Rutas");
+    return (
+      <LoadingScreen 
+        error={error.message}
+        showSidebar={true}
+      />
+    );
+  }
 
   const {
     calendario,

@@ -9,6 +9,7 @@ import KPICard from "components/cards/KPICard";
 import ChartComponent from "components/charts/Chart";
 import ReportFilter from "components/filter/FilterReport";
 import Footer from "components/footer/Footer";
+import LoadingScreen from "components/loading/LoadingScreen";
 import DetalleDevolucionesModal from "components/modals/DetalleDevolucionesModal";
 import Navbar from "components/navbar/Navbar";
 import Pagination from "components/pagination/Pagination";
@@ -46,8 +47,24 @@ const Report = () => {
     }
   });
 
-  if (isLoading) return <div>Cargando...</div>;
-  if (error) return <div>Error: {error.message}</div> && toast.error("Error cargando los reportes");
+  if (isLoading) {
+    return (
+      <LoadingScreen 
+        message="Cargando reporte de Despensas..."
+        showSidebar={true}
+      />
+    );
+  }
+
+  if (error) {
+    toast.error("Error cargando el reporte de Despensas");
+    return (
+      <LoadingScreen 
+        error={error.message}
+        showSidebar={true}
+      />
+    );
+  }
 
   const {
     evolucionMensual,

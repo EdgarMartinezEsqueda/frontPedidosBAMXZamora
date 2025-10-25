@@ -8,6 +8,7 @@ import RecentActivityCard from "components/cards/TSActivity";
 import ChartComponent from "components/charts/Chart";
 import ReportFilter from "components/filter/FilterReport";
 import Footer from "components/footer/Footer";
+import LoadingScreen from "components/loading/LoadingScreen";
 import Navbar from "components/navbar/Navbar";
 import Sidebar from "components/sidebar/Sidebar";
 import TSMetricsTable from "components/tables/reports/SocialWorkers";
@@ -32,10 +33,23 @@ const ReporteTS = () => {
     }
   });
 
-  if (isLoading) return <div className="p-4 text-center">Cargando métricas...</div>;
+  if (isLoading) {
+    return (
+      <LoadingScreen 
+        message="Cargando reporte de Trabajadores sociales..."
+        showSidebar={true}
+      />
+    );
+  }
+
   if (error) {
-    toast.error("Error cargando reportes de trabajadores sociales");
-    return <div className="p-4 text-red-500">Error al cargar los datos</div>;
+    toast.error("Error cargando el reporte de Trabajadores sociales");
+    return (
+      <LoadingScreen 
+        error={error.message}
+        showSidebar={true}
+      />
+    );
   }
 
   const { tablaMetricas, graficas, actividadReciente } = reportesTS;
