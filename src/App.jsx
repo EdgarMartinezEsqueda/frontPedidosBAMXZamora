@@ -1,40 +1,45 @@
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, matchPath } from "react-router";
 import { Toaster } from "react-hot-toast";
+import { matchPath, Navigate, Route, Routes, useLocation } from "react-router";
 
 import PageTitle from "components/title/PageTitle";
+import ErrorPage from "pages/404";
+import ReportesApadrinadas from "pages/admin/reportes/apadrinadas";
+import ReporteComplementos from "pages/admin/reportes/complementos";
+import ReportesComunidades from "pages/admin/reportes/comunidades";
+import ReportesDespensas from "pages/admin/reportes/despensas";
+import ReportesEconomicos from "pages/admin/reportes/economico";
+import ReportesResumen from "pages/admin/reportes/resumen";
+import ReportesRutas from "pages/admin/reportes/rutas";
+import ReportesTS from "pages/admin/reportes/ts";
+import EditTipoComplemento from "pages/admin/tiposComplemento/editarTipoComplemento";
+import NuevoTipoComplemento from "pages/admin/tiposComplemento/nuevoTipoComplemento";
+import VerTipoComplemento from "pages/admin/tiposComplemento/tipoComplemento";
+import AllTiposComplemento from "pages/admin/tiposComplemento/tiposComplemento";
+import EditUser from "pages/admin/usuarios/editarUsuario";
+import NewUser from "pages/admin/usuarios/nuevoUsuario";
+import Users from "pages/admin/usuarios/usuarios";
+import ForgotPassword from "pages/auth/forgotPassword";
+import ResetPassword from "pages/auth/resetPassword";
+import Community from "pages/comunidad/comunidad";
+import Communities from "pages/comunidad/comunidades";
+import EditCommunity from "pages/comunidad/editarComunidad";
+import NewCommunity from "pages/comunidad/nuevaComunidad";
 import HomePage from "pages/home";
-import ErrorPage  from "pages/404";
 import LoginPage from "pages/login";
-import SignInPage from "pages/signIn";
-import OrdersPage from "pages/pedido/pedido";
+import Calendar from "pages/pedido/calendario";
 import EditOrder from "pages/pedido/editarPedido";
 import NewOrder from "pages/pedido/nuevoPedido";
-import OrdersByTs from "pages/pedido/pedidosPorTs.jsx";
-import AllRoutes from "pages/ruta/rutas";
-import NewRoute from "pages/ruta/nuevaRuta";
+import OrdersPage from "pages/pedido/pedido";
+import OrdersByTs from "pages/pedido/pedidosPorTs";
 import EditRoute from "pages/ruta/editarRuta";
+import NewRoute from "pages/ruta/nuevaRuta";
 import Ruta from "pages/ruta/ruta";
-import Communities from "pages/comunidad/comunidades";
-import Community from "pages/comunidad/comunidad";
-import NewCommunity from "pages/comunidad/nuevaComunidad";
-import EditCommunity from "pages/comunidad/editarComunidad";
-import Users from "pages/admin/usuarios/usuarios";
-import NewUser from "pages/admin/usuarios/nuevoUsuario";
-import EditUser from "pages/admin/usuarios/editarUsuario";
-import ReportesResumen from "pages/admin/reportes/resumen.jsx";
-import ReportesRutas from "pages/admin/reportes/rutas.jsx";
-import ReportesTS from "pages/admin/reportes/ts.jsx";
-import ReportesDespensas from "pages/admin/reportes/despensas.jsx";
-import ReportesComunidades from "pages/admin/reportes/comunidades.jsx";
-import ReportesApadrinadas from "pages/admin/reportes/apadrinadas.jsx";
-import ReportesEconomicos from "pages/admin/reportes/economico.jsx";
-import ForgotPassword from "pages/auth/forgotPassword.jsx";
-import ResetPassword from "pages/auth/resetPassword.jsx";
-import Calendar from "pages/pedido/calendario.jsx";
-import Tickets from "pages/tickets/tickets.jsx";
-import Ticket from "pages/tickets/ticket.jsx";
-import NewTicket from "pages/tickets/nuevoTicket.jsx";
-import EditTicket from "pages/tickets/editarTicket.jsx";
+import AllRoutes from "pages/ruta/rutas";
+import SignInPage from "pages/signIn";
+import EditTicket from "pages/tickets/editarTicket";
+import NewTicket from "pages/tickets/nuevoTicket";
+import Ticket from "pages/tickets/ticket";
+import Tickets from "pages/tickets/tickets";
 
 import { useAuth } from "context/AuthContext";
 import { ThemeProvider } from "context/ThemeContext";
@@ -62,6 +67,7 @@ function App() {
     { path: "/reportes/comunidades", element: <ReportesComunidades />, requiresAuth: true, title: "Reportes comunidades", allowedRoles: ["Direccion", "Contabilidad", "Consejo", "Ts", "Coordinadora", "Almacen"	] },
     { path: "/reportes/apadrinadas", element: <ReportesApadrinadas />, requiresAuth: true, title: "Reportes apadrinadas", allowedRoles: ["Direccion", "Contabilidad", "Consejo", "Ts", "Coordinadora"] },
     { path: "/reportes/economico", element: <ReportesEconomicos />, requiresAuth: true, title: "Reportes económicos", allowedRoles: ["Direccion", "Contabilidad", "Consejo"] },
+    { path: "/reportes/complementos", element: <ReporteComplementos />, requiresAuth: true, title: "Reportes complementos", allowedRoles: ["Direccion", "Almacen", "Consejo"] },
 
     { path: "/usuarios", element: <Users />, requiresAuth: true, title: "Usuarios", allowedRoles: ["Direccion"] },
     { path: "/usuarios/nuevo", element: <NewUser />, requiresAuth: true, title: "Nuevo usuario", allowedRoles: ["Direccion"] },
@@ -87,6 +93,11 @@ function App() {
     { path: "/tickets/nuevo", element: <NewTicket />, requiresAuth: true, title: "Nuevo ticket", allowedRoles: ["Direccion", "Ts", "Almacen", "Coordinadora", "Consejo", "Contabilidad"] },
     { path: "/tickets/:id", element: <Ticket />, requiresAuth: true, title: "Ticket", allowedRoles: ["Direccion", "Consejo"] },
     { path: "/tickets/editar/:id", element: <EditTicket />, requiresAuth: true, title: "Editar ticket", allowedRoles: ["Direccion"] },
+
+    { path: "/tiposComplemento", element: <AllTiposComplemento />, requiresAuth: true, title: "Tipos de complemento", allowedRoles: ["Direccion", "Ts", "Almacen", "Coordinadora", "Consejo", "Contabilidad"] },
+    { path: "/tiposComplemento/nuevo", element: <NuevoTipoComplemento />, requiresAuth: true, title: "Nuevo tipo de complemento", allowedRoles: ["Direccion", "Almacen"] },
+    { path: "/tiposComplemento/:id/", element: <VerTipoComplemento />, requiresAuth: true, title: "Tipo de complemento", allowedRoles: ["Direccion", "Almacen"] },
+    { path: "/tiposComplemento/editar/:id", element: <EditTipoComplemento />, requiresAuth: true, title: "Editar tipo de complemento", allowedRoles: ["Direccion", "Almacen"] },
 
     { path: "*", element: <ErrorPage />, requiresAuth: true, title: "Ha surgido un error", allowedRoles: ["Direccion", "Ts", "Almacen", "Coordinadora", "Consejo", "Contabilidad"] },
   ];
