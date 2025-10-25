@@ -29,6 +29,7 @@ const Navbar = () => {
     { text: "Usuarios", roles: ["Direccion"] , link: "/usuarios" },
     { text: "Rutas", roles: ["Direccion", "Consejo",  "Coordinadora", "Ts", "Contabilidad", "Almacen"], link: "/rutas" },
     { text: "Comunidades", roles: ["Direccion", "Consejo",  "Coordinadora", "Ts", "Contabilidad", "Almacen"], link: "/comunidades" },
+    { text: "Complementos", roles: ["Direccion", "Almacen"], link: "/tiposComplemento" },
     { text: "Soporte", roles: ["Direccion"] , link: "/tickets" },
   ];
 

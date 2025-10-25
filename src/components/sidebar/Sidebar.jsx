@@ -1,8 +1,9 @@
-import { useState } from "react";
-import { Link, useLocation } from "react-router";
-import {  FaHome, FaBoxOpen, FaTruck, FaUsers, FaMapMarked, FaHeart, FaMoneyBill } from "react-icons/fa";
-import { IoIosArrowForward, IoIosArrowBack } from "react-icons/io";
 import { useAuth } from "context/AuthContext";
+import { useState } from "react";
+import { FaBoxOpen, FaHeart, FaHome, FaMapMarked, FaMoneyBill, FaTruck, FaUsers } from "react-icons/fa";
+import { HiCube } from "react-icons/hi";
+import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
+import { Link, useLocation } from "react-router";
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -18,6 +19,7 @@ const Sidebar = () => {
     { label: "Comunidades", icon: <FaMapMarked />, to: "/reportes/comunidades" },
     { label: "Apadrinadas", icon: <FaHeart />, to: "/reportes/apadrinadas" },
     { label: "Económico", icon: <FaMoneyBill />, to: "/reportes/economico" },
+    { label: "Complementos", icon: <HiCube />, to: "/reportes/complementos" },
   ];
 
   const getFilteredItems = () => {
