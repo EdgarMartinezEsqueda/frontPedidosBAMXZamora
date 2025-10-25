@@ -13,7 +13,9 @@ export const RESOURCES = {
   COMUNIDADES: "comunidades",
   USUARIOS: "usuarios",
   TICKETS: "tickets",
-  COBRANZAS: "cobranzas"
+  COBRANZAS: "cobranzas",
+  TIPOS_COMPLEMENTO: "tiposComplemento",
+  COMPLEMENTOS: "complementos"
 };
 
 const permissions = {
@@ -24,7 +26,9 @@ const permissions = {
     [RESOURCES.COMUNIDADES]: ["create", "read", "update", "delete"],
     [RESOURCES.USUARIOS]: ["create", "read", "update", "delete"],
     [RESOURCES.TICKETS]: ["create", "read", "update", "delete"],
-    [RESOURCES.COBRANZAS]: ["create", "read", "update"]
+    [RESOURCES.COBRANZAS]: ["create", "read", "update"],
+    [RESOURCES.TIPOS_COMPLEMENTO]: ["create", "read", "update", "delete"],
+    [RESOURCES.COMPLEMENTOS]: ["create", "read", "update", "delete"]
   },
   [ROLES.CONSEJO]: {
     // Solo lectura general. Puede editar su propio usuario.
@@ -36,7 +40,9 @@ const permissions = {
       ownershipCheck: (user, resourceId) => user.id === Number(resourceId)
     },
     [RESOURCES.TICKETS]: ["create", "read"],
-    [RESOURCES.COBRANZAS]: ["read"]
+    [RESOURCES.COBRANZAS]: ["read"],
+    [RESOURCES.TIPOS_COMPLEMENTO]: ["read"],
+    [RESOURCES.COMPLEMENTOS]: ["read"]
   },
   [ROLES.COORDINADORA]: {
     [RESOURCES.PEDIDOS]: {
@@ -49,7 +55,9 @@ const permissions = {
       actions: ["read", "update" ], // Solo puede modificar su propio usuario
       ownershipCheck: (user, resourceId) => user.id === Number(resourceId)
     },
-    [RESOURCES.TICKETS]: ["read"]
+    [RESOURCES.TICKETS]: ["read"],
+    [RESOURCES.TIPOS_COMPLEMENTO]: ["read"],
+    [RESOURCES.COMPLEMENTOS]: ["read"]
   },
   [ROLES.TS]: {
     [RESOURCES.PEDIDOS]: {
@@ -62,7 +70,9 @@ const permissions = {
       actions: ["read", "update" ], // Solo puede modificar su propio usuario
       ownershipCheck: (user, resourceId) => user.id === Number(resourceId)
     },
-    [RESOURCES.TICKETS]: ["read"]
+    [RESOURCES.TICKETS]: ["read"],
+    [RESOURCES.TIPOS_COMPLEMENTO]: ["read"],
+    [RESOURCES.COMPLEMENTOS]: ["read"]
   },
   [ROLES.ALMACEN]: {
     [RESOURCES.PEDIDOS]: ["read"],
@@ -72,7 +82,9 @@ const permissions = {
       actions: ["read", "update" ], // Solo puede modificar su propio usuario
       ownershipCheck: (user, resourceId) => user.id === Number(resourceId)
     },
-    [RESOURCES.TICKETS]: ["read"]
+    [RESOURCES.TICKETS]: ["read"],
+    [RESOURCES.TIPOS_COMPLEMENTO]: ["create", "read", "update", "delete"],
+    [RESOURCES.COMPLEMENTOS]: ["create", "read", "update", "delete"]
   },
   [ROLES.CONTABILIDAD]: {
     [RESOURCES.PEDIDOS]: ["read"],
@@ -83,7 +95,9 @@ const permissions = {
       ownershipCheck: (user, resourceId) => user.id === Number(resourceId)
     },
     [RESOURCES.TICKETS]: ["read"],
-    [RESOURCES.COBRANZAS]: ["create", "read", "update"]
+    [RESOURCES.COBRANZAS]: ["create", "read", "update"],
+    [RESOURCES.TIPOS_COMPLEMENTO]: ["read"],
+    [RESOURCES.COMPLEMENTOS]: ["read"]
   }
 };
 
