@@ -11,11 +11,13 @@ import ReturnToEditButton from "components/buttons/ReturnToEditButton";
 import Footer from "components/footer/Footer";
 import Navbar from "components/navbar/Navbar";
 import CollectionSection from "components/order/CollectionSection";
+import ComplementosSection from "components/order/ComplementsSection";
 import OrderFinalDetails from "components/order/OrderFinalDetails";
 import OrderHeader from "components/order/OrderHeader";
 import OrderSummary from "components/order/OrderSummary";
 import Print from "components/print/Print";
 import TableOrder from "components/tables/orders/TableOrder";
+import { IoIosInformationCircleOutline } from "react-icons/io";
 import { generateCobranzaPDF } from "utils/pdfGenerator";
 
 const OrderPage = () => {
@@ -144,18 +146,25 @@ const OrderPage = () => {
       <Navbar />
       <main className="flex-1">
         <div ref={tableRef}>
-          <OrderHeader pedidoData={pedidoData} id={id} />         
+          <OrderHeader pedidoData={pedidoData} id={id} /> 
 
           <TableOrder 
             mode="view" 
             data={pedidoData} 
-            esRutaVoluntariado={esRutaVoluntariado} // 🆕
+            esRutaVoluntariado={esRutaVoluntariado}
           />
 
           <OrderSummary pedidoData={pedidoData} />
         </div>
 
         <Print contentRef={tableRef} />
+
+        {/* Sección de complementos */}
+        <ComplementosSection 
+          idPedido={id}
+          pedidoFinalizado={pedidoFinalizado}
+          puedeEditar={puedeActualizarPedido}
+        />  
 
         {puedeActualizarPedido && !pedidoFinalizado && (
           <div className="flex justify-center">
@@ -186,9 +195,7 @@ const OrderPage = () => {
           <div className="max-w-2xl mx-auto my-6 p-4">
             <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-4 text-center">
               <div className="flex items-center justify-center mb-2">
-                <svg className="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+                <IoIosInformationCircleOutline className="w-6 h-6 text-purple-600 dark:text-purple-400"  />
               </div>
               <p className="text-purple-800 dark:text-purple-200 font-medium">
                 Ruta de Voluntariado
